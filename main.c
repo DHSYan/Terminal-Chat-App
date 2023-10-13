@@ -18,7 +18,8 @@
 //
 
 int main() {
-
+    struct user* test = load_credentials(); 
+    print_all_valided_user(test, 10);
     return 0;
 }
 

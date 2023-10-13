@@ -109,6 +109,15 @@ file (`userlog.txt`)
 
 
 
+
+
+### need to be learned
+1. Multithreading
+  - for Blocking user, because once someone gets block, we have to start a 
+  timer aside, for 10 sec, but other user should be able to login in
+
+
+
 ### What _DOESN"T_ need to be done
 1. catupre and Display Live Video
   - We will just tramsmit and recieve video files
