@@ -9,10 +9,10 @@ struct user {
 // load the file into a array of users
 struct user* load_credentials();
 
-void prompt();
+struct user* prompt();
 
 // Check inputed user against our array of valided user
-void user_validation(struct user user, int max_attempt); 
+void user_validation(struct user* valid_users, int max_attempt); 
 
 // Multithread? 
 void block(struct user user);
