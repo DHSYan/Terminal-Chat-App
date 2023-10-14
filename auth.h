@@ -1,22 +1,30 @@
 #ifndef AUTH_H
 #define AUTH_H
+#include <time.h>
 
 struct user {
     char* username;
     char* password;
+    time_t blocked_time;
 };
+
+void print_all_valided_user(struct user* list_all_user, int len);
 
 // load the file into a array of users
 struct user* load_credentials();
 
-struct user* prompt();
+struct user* prompt(struct user* valid_users);
+
+int is_registered_user(char username[], struct user* valid_users, int len);
+
+int is_user_equal(struct user* u_lst, struct user* u2, int len);
 
 // Check inputed user against our array of valided user
 void user_validation(struct user* valid_users, int max_attempt); 
 
-// Multithread? 
-void block(struct user user);
+void block(struct user* user);
 
-void print_all_valided_user(struct user* list_all_user, int len);
+
+
 
 #endif

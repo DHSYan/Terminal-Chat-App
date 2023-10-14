@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <string.h>
+#include <time.h>
 
 void print_all_valided_user(struct user* lst, int len) {
     for (int i = 0; i < len; i++) {
@@ -57,7 +58,7 @@ struct user* load_credentials() {
    return valid_users;
 }
 
-struct user* prompt() {
+struct user* prompt(struct user *valid_users) {
     struct user* res = malloc(sizeof (struct user));
     res->username = malloc(sizeof(char) * 150);
     res->password = malloc(sizeof(char) * 150);
@@ -67,17 +68,40 @@ struct user* prompt() {
     printf("Please Enter username: ");
     scanf("%99s", username);
     strcpy(res->username, username);
-    
-    printf("\nPlease enter password for %s: ", username);
-    scanf("%99s", password);
 
-    strcpy(res->password, password);
+    if (is_registered_user(username, valid_users, 10) == false) {
+        printf("You are not a regitstered User, try again\n");
+    } else {
+        printf("\nPlease enter password for %s: ", username);
+        scanf("%99s", password);
 
-    return res;
-    
+        strcpy(res->password, password);
+
+        return res;
+    }
+    return NULL;
 }
 
-bool is_user_equal(struct user* u_lst, struct user* u2, int len) {
+int is_registered_user(char username[], struct user* valid_users, int len) {
+    for (int i = 0; i < len; i++) {
+        if(strcmp((valid_users+i)->username, username) == 0) {
+            return true;
+        } 
+    }
+    return false;
+}
+
+int is_user_equal(struct user* u_lst, struct user* u2, int len) {
+    if (u2->blocked_time > 0) {
+        time_t seconds;
+        time(&seconds);
+        if (seconds - u2->blocked_time > 10) {
+            return -1; // -1 if the user is still blocked
+        } else {
+            u2->blocked_time = 0; // Can I put 0 into time_t?
+        }
+    }
+
     for (int i = 0; i < len; i++) {
         if (strcmp((u_lst+i)->password, u2->password) == 0
                 &&
@@ -94,14 +118,19 @@ void user_validation(struct user* valid_users, int max_attempt) {
     int tries = 0;
     while (true) {
         if (tries == max_attempt) {
-            printf("Your are blocked, please wait 10 seconds");
-            // Multithread here
-            break;
+            printf("Your are blocked, please wait 10 seconds\n");
+            block(user);
+            // break;
+            tries = 0;
         } else {
-            user = prompt();
-            if (is_user_equal(valid_users, user, 10) == true) {
+            user = prompt(valid_users);
+            if (user == NULL) {
+                printf("Try again\n");
+            } else if (is_user_equal(valid_users, user, 10) == true) {
                 printf("Welcome!\n");
                 break;
+            } else if (is_user_equal(valid_users, user, 10) == -1) {
+                printf("You are still blocked please wait!\n");
             } else {
                 tries++;
             }
@@ -111,7 +140,10 @@ void user_validation(struct user* valid_users, int max_attempt) {
     return;
 }
 
-void block(struct user user) {
+void block(struct user* user) {
+    // Inspired by https://www.geeksforgeeks.org/time-function-in-c/
+    time_t seconds;
+    user->blocked_time = time(&seconds);
     return;
 }
 
