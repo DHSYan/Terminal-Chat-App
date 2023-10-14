@@ -24,25 +24,31 @@ struct user* load_credentials() {
         printf("problem with opening credentials.txt\n");
     } else {
         char c;
-        int i = 0;
         int j = 0;
+        int i = 0;
         int is_user_name_done = false;
-        // int is_user_passw_done = false;
+        struct user* current = valid_users;
+        current->username = malloc(sizeof(char) * 100);
+        current->password = malloc(sizeof(char) * 100);
         while ( (c = fgetc(creds)) != EOF ) {
-            struct user current = valid_users[i];
+            // printf("Current Letter: %c\n", c);
             if( c == ' ' ) {
                 is_user_name_done = true;
                 j = 0;
             } else if ( c == '\n' ) {
                 i++;
-                // is_user_passw_done = false;
                 is_user_name_done = false;
+                // current = (valid_users+1);
+                (current+i)->username = malloc(sizeof(char) * 100);
+                (current+i)->password = malloc(sizeof(char) * 100);
+                j = 0;
             } else if (!is_user_name_done) {
-                current.username[j] = c;   
+                (current+i)->username[j] = c;   
+                j++;
             } else {
-                current.password[j] = c;
+                (current+i)->password[j] = c;
+                j++;
             } 
-            j++;
         }
     }
     // Parse the content, 
