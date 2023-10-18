@@ -204,8 +204,6 @@ time_t blocked_for(struct user* user) {
     return seconds - user->blocked_time;
 }
 
-
-
 struct user* return_user(char *username, struct user* valid_users) { 
     struct user* res;
     for (struct user* cur = valid_users; cur != NULL; cur=cur->next) {

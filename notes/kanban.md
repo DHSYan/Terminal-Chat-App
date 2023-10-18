@@ -1,26 +1,28 @@
 ---
-id: "kanban"
+
+id: kanban
 aliases:
-  - "Todo"
+  - Todo
 tags: []
-kanban-plugin: "basic"
+kanban-plugin: basic
+
 ---
 
 ## Todo
-- [ ] Add function where `load_credentials()` run out of 10 nodes
+
 
 
 ## Doing
-
-- [ ] Authentication System
-- [ ] Fix Blocking System (AUTH)
-- [ ] Refactor Auth.c
 
 
 
 ## Finshed
 
 **Complete**
+- [x] Refactor Auth.c
+- [x] Add function where `load_credentials()` run out of 10 nodes
+- [x] Fix Blocking System (AUTH)
+- [x] Authentication System
 
 
 
