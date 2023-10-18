@@ -7,32 +7,52 @@ struct user {
     char* username;
     char* password;
     time_t blocked_time;
-    struct user* next_user;
+    struct user* next;
 };
 
-void print_all_valided_user(struct user* list_all_user, int len);
+struct user* create_node(struct user* next);
+
+// Debug
+void print_all_valided_user(struct user* list_all_user);
 
 // load the file into a array of users
 // This should return a linked list of user
 struct user* load_credentials();
 
-struct user* prompt(struct user* valid_users);
 
-int is_registered_user(char username[], struct user* valid_users, int len);
+// Output to STDOUT
+// If Username Exist (is_registered_user())
+// Output passwd prompt to STDOUT
+// if Password exist
+// return true
+// else if max attempted reached
+// block()
+// loop back
+int login(struct user* valid_users, int max_attempt);
 
-int is_user_equal(struct user* u_lst, struct user* u2, int len);
+// Checks if username exists within our linked list
+// if exist call return_user()
+int is_registered_user(char username[], struct user* valid_users);
+
+int is_password_correct(char password[], struct user* user);
+
+// int is_user_valid(struct user* valid_users, struct user* u2);
 
 // Check inputed user against our array of valided user
-void user_validation(struct user* valid_users, int max_attempt); 
+// void user_validation(struct user* valid_users, int max_attempt); 
 
+// Modify the blocked_time field in struct user to a timestamp
 void block(struct user* user);
 
-bool is_blocked(struct user user);
+// Check if the cur time - blocked_time > 1s
+// if yes,
+// return false (not blocked)
+// if on, 
+// return true (yes indeed blocked)
+int is_blocked(struct user* user);
 
+// Returns a pointer to the user in the linkedlist
 struct user* return_user(char* username, struct user* valid_users);
-
-int valid_users_len(struct user* valid_users);
-
 
 
 

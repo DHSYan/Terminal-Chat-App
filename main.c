@@ -19,9 +19,9 @@
 
 int main() {
     struct user* test = load_credentials(); 
-    // print_all_valided_user(test, 10);
+    print_all_valided_user(test);
     // struct user* client = prompt();
-    user_validation(test, 2);
+    // user_validation(test, 2);
 
     return 0;
 }
