@@ -7,13 +7,11 @@ struct user {
     char* username;
     char* password;
     time_t blocked_time;
-    struct user* next_user;
 };
 
 void print_all_valided_user(struct user* list_all_user, int len);
 
 // load the file into a array of users
-// This should return a linked list of user
 struct user* load_credentials();
 
 struct user* prompt(struct user* valid_users);
@@ -29,9 +27,7 @@ void block(struct user* user);
 
 bool is_blocked(struct user user);
 
-struct user* return_user(char* username, struct user* valid_users);
-
-int valid_users_len(struct user* valid_users);
+struct user* return_user(char* username);
 
 
 

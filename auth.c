@@ -147,3 +147,25 @@ void block(struct user* user) {
     return;
 }
 
+bool is_blocked(struct user user) {
+    if (user.blocked_time > 0) {
+        return true;
+    }
+    return false;
+}
+
+
+
+struct user* return_user(char *username, struct user* valid_users) { 
+    for (int i = 0; i < len; i++) {
+        if(strcmp((valid_users+i)->username, username) == 0) {
+            return true;
+        } 
+    }
+    return false;
+
+}
+
+int valid_users_len(struct user *valid_users) {
+    for (struct user* cur; cur!=NULL
+}

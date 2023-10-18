@@ -1,8 +1,10 @@
 ---
-
-excalidraw-plugin: parsed
-tags: [excalidraw]
-
+id: "Sketchboard"
+aliases:
+  - "Text Elements"
+tags:
+  - "excalidraw"
+excalidraw-plugin: "parsed"
 ---
 ==⚠  Switch to EXCALIDRAW VIEW in the MORE OPTIONS menu of this document. ⚠==
 

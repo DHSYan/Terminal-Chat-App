@@ -1,5 +1,9 @@
 ---
 
+id: kanban
+aliases:
+  - Todo
+tags: []
 kanban-plugin: basic
 
 ---
@@ -11,6 +15,7 @@ kanban-plugin: basic
 ## Doing
 
 - [ ] Authentication System
+- [ ] Fix Blocking System (AUTH)
 
 
 ## Finshed
