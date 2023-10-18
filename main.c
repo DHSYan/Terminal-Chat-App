@@ -20,8 +20,11 @@
 int main() {
     struct user* test = load_credentials(); 
     print_all_valided_user(test);
-    // struct user* client = prompt();
-    // user_validation(test, 2);
+
+
+
+    while(login(test, 2) != true);
+        
 
     return 0;
 }
@@ -29,3 +32,7 @@ int main() {
 
 
 // References
+//
+// Auth.c 
+    // reading a file: https://www.youtube.com/watch?v=fLPqn026DaE
+    // struct user* valid_users = malloc(sizeof(struct user));

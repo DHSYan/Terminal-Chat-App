@@ -21,13 +21,6 @@ void print_all_valided_user(struct user* lst) {
 }
 
 struct user* load_credentials() {
-    // Putting the file content into the array of users
-    // struct user* valid_users = malloc(sizeof(struct user) * 10); 
-    // for (struct user* cur = valid_users; cur != NULL; cur=cur->next) {
-    //     cur->username = malloc(sizeof(char) * 100);
-    //     cur->password = malloc(sizeof(char) * 100);
-    // }
-
     // reading a file: https://www.youtube.com/watch?v=fLPqn026DaE
     // struct user* valid_users = malloc(sizeof(struct user));
     struct user* valid_users = create_node(NULL);
@@ -41,10 +34,7 @@ struct user* load_credentials() {
         int j = 0;
         int is_user_name_done = false;
         struct user* cur = valid_users;
-        // current->username = malloc(sizeof(char) * 100);
-        // current->password = malloc(sizeof(char) * 100);
         while ( (c = fgetc(creds)) != EOF ) {
-            // printf("Current Letter: %c\n", c);
             if( c == ' ' ) {
                 is_user_name_done = true;
                 j = 0;
@@ -52,9 +42,6 @@ struct user* load_credentials() {
                 cur->next = create_node(NULL);
                 cur=cur->next;
                 is_user_name_done = false;
-            
-                // current->username = malloc(sizeof(char) * 100);
-                // current->password = malloc(sizeof(char) * 100);
                 j = 0;
             } else if (!is_user_name_done) {
                 cur->username[j] = c;   
@@ -104,7 +91,12 @@ int login(struct user *valid_users, int max_attempt) {
             continue;
         } else {
             attempted_user = return_user(username, valid_users);
-            break;
+            if (is_blocked(attempted_user) == true
+                    && blocked_for(attempted_user) < 10) {
+                printf("You are blocked please wait\n");
+            } else {
+                break;
+            }
         }
     }
 
@@ -115,7 +107,7 @@ int login(struct user *valid_users, int max_attempt) {
         if(is_password_correct(password, attempted_user) == true) {
             return true;
         } else {
-            printf("The password is not correct");
+            printf("The password is not correct\n");
             attempt_num++;
         }
     }
@@ -204,6 +196,12 @@ int is_blocked(struct user* user) {
         return true;
     }
     return false;
+}
+
+time_t blocked_for(struct user* user) {
+    time_t seconds;
+    time(&seconds);
+    return seconds - user->blocked_time;
 }
 
 

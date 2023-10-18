@@ -51,6 +51,8 @@ void block(struct user* user);
 // return true (yes indeed blocked)
 int is_blocked(struct user* user);
 
+time_t blocked_for(struct user* user);
+
 // Returns a pointer to the user in the linkedlist
 struct user* return_user(char* username, struct user* valid_users);
 
