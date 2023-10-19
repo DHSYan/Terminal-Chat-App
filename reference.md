@@ -9,6 +9,12 @@
 // I have rferred to the Course note And Example for Multithreaded Code
 
 
+
+# Video Referred 
+https://www.youtube.com/watch?v=ldJ8WGZVXZk&t=313s
+  - For pthread
+
+
 // Auth.c 
     // reading a file: https://www.youtube.com/watch?v=fLPqn026DaE
     // struct user* valid_users = malloc(sizeof(struct user));
