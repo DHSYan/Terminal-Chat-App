@@ -10,20 +10,20 @@ kanban-plugin: basic
 
 ## Todo
 
-- [ ] have the server send the auth functionalitiy
 - [ ] loggin with auth.c
 - [ ] /msgto command
 
 
 ## Doing
 
-- [ ] Connect the client to server
+- [ ] have the server send the auth functionalitiy
 
 
 ## Finshed
 
 **Complete**
 - [x] Refactor Auth.c
+- [x] Connect the client to server
 - [x] Add function where `load_credentials()` run out of 10 nodes
 - [x] Fix Blocking System (AUTH)
 - [x] Authentication System
