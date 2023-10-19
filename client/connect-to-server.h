@@ -4,6 +4,8 @@
 int connect_to_server();
 
 
+int listen_for_server_info();
+
 
 
 

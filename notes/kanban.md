@@ -17,6 +17,7 @@ kanban-plugin: basic
 ## Doing
 
 - [ ] have the server send the auth functionalitiy
+- [ ] Have Server send stuff to client as a "protocol" msg
 
 
 ## Finshed

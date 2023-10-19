@@ -1,11 +1,3 @@
-// I have referred back to Lab 3 for the implementation for a TCP Server 
-// 
-// I have referred to https://beej.us/guide/bgnet/html/#structs 
-// for the implementation of the networking aspect
-//
-// I have referred to the Course Notes and Example for client and server
-// impelementation
-
 #include "TCPServer.h"
 
 #include <stdio.h>

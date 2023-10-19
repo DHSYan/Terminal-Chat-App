@@ -23,10 +23,6 @@
 
 // This has to interact with the client
 int main() {
-    // struct user* test = load_credentials(); 
-    // print_all_valided_user(test);
-
-
     printf("\n\nInitializing Server..\n\n");
         
     const char* port = "3000";
@@ -82,6 +78,8 @@ int main() {
                     recv(connect_socket, buffer, max_buffer_len, 0)) > 0) {
             // recv_res = recv(connect_socket, buffer, sizeof(buffer), 0);
             printf("%s", buffer);
+
+            send(connect_socket, "auth", 4, 0);
             
             // Taken this from Youtube Video by Jacob Sorber
             if (buffer[recv_res-1] == '\n') {

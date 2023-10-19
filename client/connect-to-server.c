@@ -1,11 +1,3 @@
-// I have referred back to Lab 3 for the implementation for a TCP Server 
-// 
-// I have referred to https://beej.us/guide/bgnet/html/#structs 
-// for the implementation of the networking aspect
-//
-// I have referred to the Course Notes and Example for client and server
-// impelementation
-
 #include "connect-to-server.h"
 
 #include <sys/socket.h>
@@ -48,6 +40,14 @@ int connect_to_server() {
     strcpy(buffer, "init\n");
     int send_res = send(handshake_socket, buffer, strlen(buffer)+1, 0); 
     /* printf("We send %d, %s\n", send_res, buffer); */
+
+
+    // Waiting for server's response
+    int recv_buffer_max_len = 100;
+    char recv_buffer[recv_buffer_max_len];
+    recv(handshake_socket, recv_buffer, recv_buffer_max_len, 0);
+
+
 
     
     return 0;

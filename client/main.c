@@ -20,11 +20,11 @@
 #include "auth.h"
 
 int main() {
+    struct user* valid_users = load_credentials();
+
     connect_to_server();
+
+
     return 0;
 }
-// References 
-// Auth.c 
-    // reading a file: https://www.youtube.com/watch?v=fLPqn026DaE
-    // struct user* valid_users = malloc(sizeof(struct user));
 
