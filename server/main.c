@@ -15,17 +15,18 @@
 #include <string.h>
 // My Own Modules
 #include "auth.h"
-//
+#include "TCPServer.h"
 
 // This has to interact with the client
 int main() {
-    struct user* test = load_credentials(); 
-    print_all_valided_user(test);
-
-
-
-    while(login(test, 2) != true);
+    // struct user* test = load_credentials(); 
+    // print_all_valided_user(test);
+    //
+    //
+    //
+    // while(login(test, 2) != true);
         
+    init_server();
 
     return 0;
 }

@@ -11,10 +11,12 @@
 
 
 // Stdlib
+#include "connect-to-server.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 int main() {
+    connect_to_server();
     return 0;
 }

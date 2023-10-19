@@ -5,17 +5,22 @@ EXEC = server
 
 CC = gcc
 
-${EXEC}: auth.o main.c
-	${CC} main.c auth.o -o server
+FILES = main.c auth.o TCPServer.o
+
+${EXEC}: ${FILES}
+	${CC} ${FILES} -o ${EXEC}
 	echo "Output\n\n"
-	./server
+	./${EXEC}
 
 
 auth.o: auth.c auth.h
 	${CC} -c auth.c
 
+TCPServer.o: TCPServer.h TCPServer.c
+	${CC} -c TCPServer.c
+
 
 .PHONY: clean
 
 clean: 
-	rm server *.o
+	rm ${EXEC} *.o

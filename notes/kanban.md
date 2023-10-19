@@ -10,10 +10,14 @@ kanban-plugin: basic
 
 ## Todo
 
+- [ ] have the server send the auth functionalitiy
+- [ ] loggin with auth.c
+- [ ] /msgto command
 
 
 ## Doing
 
+- [ ] Connect the client to server
 
 
 ## Finshed
