@@ -5,7 +5,7 @@ EXEC = server
 
 CC = gcc
 
-FILES = main.c auth.o TCPServer.o
+FILES = main.c TCPServer.o
 
 ${EXEC}: ${FILES}
 	${CC} ${FILES} -o ${EXEC}
@@ -13,8 +13,8 @@ ${EXEC}: ${FILES}
 	./${EXEC}
 
 
-auth.o: auth.c auth.h
-	${CC} -c auth.c
+# auth.o: auth.c auth.h
+# 	${CC} -c auth.c
 
 TCPServer.o: TCPServer.h TCPServer.c
 	${CC} -c TCPServer.c

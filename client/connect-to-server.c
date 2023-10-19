@@ -40,13 +40,14 @@ int connect_to_server() {
         perror("Couldn't Connect to server\n");
     }
 
-    int buffer_max_len = 10000;
+    int buffer_max_len = 100;
     char buffer[buffer_max_len];
-    printf("What do you want to send? ");
+    /* printf("What do you want to send? "); */
     // scanf("%10000s", buffer);
-    fgets(buffer, 10000, stdin);
+    /* fgets(buffer, 100, stdin); */
+    strcpy(buffer, "init\n");
     int send_res = send(handshake_socket, buffer, strlen(buffer)+1, 0); 
-    printf("We send %d, %s\n", send_res, buffer);
+    /* printf("We send %d, %s\n", send_res, buffer); */
 
     
     return 0;
