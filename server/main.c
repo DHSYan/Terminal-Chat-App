@@ -82,7 +82,9 @@ int main(int argc, char* argv[]) {
             // printf("%s", buffer);
 
             // send(connect_socket, "auth", 4, 0);
+            printf("Before Login\n");
             login(connect_socket, valid_user, 2);
+            printf("After Login\n");
             
             // Taken this from Youtube Video by Jacob Sorber
             if (buffer[recv_res-1] == '\n') {

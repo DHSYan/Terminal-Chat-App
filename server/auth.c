@@ -65,25 +65,6 @@ int login(int socket, struct user *valid_users, int max_attempt) {
     char username[100];
     char password[100];
 
-    // while (true) {
-    //     while( attempt_num < max_attempt) {
-    //         if (is_registered_user(username, valid_users) == false) {
-    //             printf("You are not a regitstered User, try again\n");
-    //         } else {
-    //             attempted_user = return_user(username, valid_users);
-    //             printf("\nPlease enter password for %s: ", username);
-    //             scanf("%99s", password);
-    //             if(is_password_correct(password, attempted_user) == true) {
-    //                 return true;
-    //             } else {
-    //                 printf("The password is not correct");
-    //                 attempt_num++;
-    //             }
-    //         }
-    //     }
-    //     printf("You have been blocked for 10 seconds\n");
-    // }
-
     struct user* attempted_user;
     while (true) {
         const char* username_prompt = "Username: ";
