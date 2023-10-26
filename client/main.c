@@ -20,9 +20,10 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netdb.h>
+#include <stdbool.h>
 
-int main() {
-    struct user* valid_users = load_credentials();
+int main(int argc, char* argv[]) {
+    // struct user* valid_users = load_credentials();
 
     struct addrinfo hints;
     struct addrinfo* res;
@@ -32,7 +33,7 @@ int main() {
     hints.ai_socktype = SOCK_STREAM;
 
     const char* server_addr = "127.0.0.1";
-    const char* server_port = "3000";
+    const char* server_port = argv[1];
 
     int get_addr_res = getaddrinfo(server_addr, server_port, &hints, &res);
     
@@ -47,26 +48,32 @@ int main() {
         perror("Couldn't Connect to server\n");
     }
 
-    while(true) {
+    // while(true) {
+    send(handshake_socket, "hello", 5, 0);
+    char username_prompt_buffer[100];
+    recv(handshake_socket, username_prompt_buffer, 100, 0);
+    puts(username_prompt_buffer);
 
-        int buffer_max_len = 100;
-        char buffer[buffer_max_len];
+        // int buffer_max_len = 100;
+        // char buffer[buffer_max_len];
         /* printf("What do you want to send? "); */
         // scanf("%10000s", buffer);
         /* fgets(buffer, 100, stdin); */
-        strcpy(buffer, "init\n");
-        int send_res = send(handshake_socket, buffer, strlen(buffer)+1, 0); 
+        // strcpy(buffer, "Chewy\n");
+        // int send_res = send(handshake_socket, buffer, strlen(buffer)+1, 0); 
         /* printf("We send %d, %s\n", send_res, buffer); */
 
 
         // Waiting for server's response
-        int recv_buffer_max_len = 100;
-        char recv_buffer[recv_buffer_max_len];
-        recv(handshake_socket, recv_buffer, recv_buffer_max_len, 0);
+        // int recv_buffer_max_len = 100;
+        // char recv_buffer[recv_buffer_max_len];
+        // recv(handshake_socket, recv_buffer, recv_buffer_max_len, 0);
+        // puts(recv_buffer);
 
-        char isCont[50];
-        scanf("%49s", isCont);
-    }
+
+        // char isCont[50];
+        // scanf("%49s", isCont);
+    // }
     
     return 0;
 }
