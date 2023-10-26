@@ -10,6 +10,7 @@ FILES = main.c connect-to-server.o auth.o
 ${EXEC}: ${FILES}
 	${CC} ${FILES} -o ${EXEC}
 	echo "Output\n\n"
+	make clean
 	./${EXEC}
 
 

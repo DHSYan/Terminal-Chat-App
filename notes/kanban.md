@@ -17,7 +17,6 @@ kanban-plugin: basic
 ## Doing
 
 - [ ] have the server send the auth functionalitiy
-- [ ] Have Server send stuff to client as a "protocol" msg
 
 
 ## Finshed
@@ -26,6 +25,7 @@ kanban-plugin: basic
 - [x] Refactor Auth.c
 - [x] Connect the client to server
 - [x] Add function where `load_credentials()` run out of 10 nodes
+- [x] Have Server send stuff to client as a "protocol" msg
 - [x] Fix Blocking System (AUTH)
 - [x] Authentication System
 
