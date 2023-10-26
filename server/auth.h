@@ -28,7 +28,7 @@ struct user* load_credentials();
 // else if max attempted reached
 // block()
 // loop back
-int login(struct user* valid_users, int max_attempt);
+int login(int socket, struct user* valid_users, int max_attempt);
 
 // Checks if username exists within our linked list
 // if exist call return_user()

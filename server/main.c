@@ -17,15 +17,17 @@
 #include <string.h>
 #include <stdbool.h>
 // My Own Modules
-// #include "auth.h"
+#include "auth.h"
 #include "TCPServer.h"
 
 
 // This has to interact with the client
-int main() {
+int main(int argc, char* argv[]) {
+    struct user* valid_user = load_credentials();
+
     printf("\n\nInitializing Server..\n\n");
         
-    const char* port = "3000";
+    const char* port = argv[1];
 
     struct addrinfo hints;
     struct addrinfo* res;
@@ -77,9 +79,10 @@ int main() {
         while ((recv_res =
                     recv(connect_socket, buffer, max_buffer_len, 0)) > 0) {
             // recv_res = recv(connect_socket, buffer, sizeof(buffer), 0);
-            printf("%s", buffer);
+            // printf("%s", buffer);
 
-            send(connect_socket, "auth", 4, 0);
+            // send(connect_socket, "auth", 4, 0);
+            login(connect_socket, valid_user, 2);
             
             // Taken this from Youtube Video by Jacob Sorber
             if (buffer[recv_res-1] == '\n') {

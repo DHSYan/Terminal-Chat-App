@@ -1,4 +1,5 @@
 #include "auth.h"
+#include "util.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -60,7 +61,7 @@ struct user* load_credentials() {
    return valid_users;
 }
 
-int login(struct user *valid_users, int max_attempt) {
+int login(int socket, struct user *valid_users, int max_attempt) {
     char username[100];
     char password[100];
 
@@ -85,8 +86,11 @@ int login(struct user *valid_users, int max_attempt) {
 
     struct user* attempted_user;
     while (true) {
-        printf("Please Enter username: ");
-        scanf("%99s", username);
+        const char* username_prompt = "Username: ";
+        send(socket, username_prompt, strlen(username_prompt), 0);
+        recv(socket, username, sizeof(username), 0); 
+        remove_newline(username);
+
         if (is_registered_user(username, valid_users) == false) {
             printf("You are not a regitstered User, try again\n");
             continue;
