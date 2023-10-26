@@ -10,7 +10,6 @@ kanban-plugin: basic
 
 ## Todo
 
-- [ ] loggin with auth.c
 - [ ] /msgto command
 
 

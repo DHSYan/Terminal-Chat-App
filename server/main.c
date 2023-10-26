@@ -88,9 +88,7 @@ int main() {
 
             memset(buffer, 0, strlen(buffer)*sizeof(char));
         }
-
         close(connect_socket);
-
     }
 
     close(handshake_socket);

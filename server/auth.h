@@ -56,6 +56,8 @@ time_t blocked_for(struct user* user);
 // Returns a pointer to the user in the linkedlist
 struct user* return_user(char* username, struct user* valid_users);
 
-
+// This function will prompt client with login prompts
+// and 
+int send_auth_prompt(int socket);
 
 #endif

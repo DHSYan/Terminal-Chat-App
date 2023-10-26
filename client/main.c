@@ -12,7 +12,7 @@
 
 
 #include "connect-to-server.h"
-#include "auth.h"
+// #include "auth.h"
 // Stdlib
 #include <stdio.h>
 #include <stdlib.h>

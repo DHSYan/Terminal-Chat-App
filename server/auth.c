@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
+#include <sys/socket.h>
 
 struct user* create_node(struct user* next) {
     struct user* res = malloc(sizeof(struct user));
@@ -218,3 +219,15 @@ struct user* return_user(char *username, struct user* valid_users) {
 // int valid_users_len(struct user *valid_users) {
 //     for (struct user* cur; cur!=NULL
 // }
+
+int send_auth_prompt(int socket) {
+    const char* username_prompt = "Username: ";
+    const char* password_prompt = "Password: ";
+    
+    send(socket, username_prompt, strlen(username_prompt), 0);
+    // recv(socket, void *, size_t, int)
+    send(socket, password_prompt, strlen(password_prompt), 0);
+
+    // Nothing Cur
+    return 0;
+}

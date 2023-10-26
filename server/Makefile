@@ -10,8 +10,8 @@ FILES = main.c TCPServer.o
 ${EXEC}: ${FILES}
 	${CC} ${FILES} -o ${EXEC}
 	echo "Output\n\n"
-	make clean
 	./${EXEC}
+	make clean
 
 
 # auth.o: auth.c auth.h
