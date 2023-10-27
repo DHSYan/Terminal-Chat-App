@@ -23,8 +23,6 @@
 #include <stdbool.h>
 
 int main(int argc, char* argv[]) {
-    // struct user* valid_users = load_credentials();
-
     struct addrinfo hints;
     struct addrinfo* res;
 
@@ -50,25 +48,25 @@ int main(int argc, char* argv[]) {
 
     // while(true) {
     send(handshake_socket, "hello", 5, 0);
-    char username_prompt_buffer[100];
-    recv(handshake_socket, username_prompt_buffer, 100, 0);
-    puts(username_prompt_buffer);
+    // char username_prompt_buffer[100];
+    // recv(handshake_socket, username_prompt_buffer, 100, 0);
+    // puts(username_prompt_buffer);
 
-        // int buffer_max_len = 100;
-        // char buffer[buffer_max_len];
-        /* printf("What do you want to send? "); */
-        // scanf("%10000s", buffer);
-        /* fgets(buffer, 100, stdin); */
-        // strcpy(buffer, "Chewy\n");
-        // int send_res = send(handshake_socket, buffer, strlen(buffer)+1, 0); 
-        /* printf("We send %d, %s\n", send_res, buffer); */
-
-
-        // Waiting for server's response
-        // int recv_buffer_max_len = 100;
-        // char recv_buffer[recv_buffer_max_len];
-        // recv(handshake_socket, recv_buffer, recv_buffer_max_len, 0);
-        // puts(recv_buffer);
+    // int buffer_max_len = 100;
+    // char buffer[buffer_max_len];
+    // printf("What do you want to send? ");
+    // scanf("%10000s", buffer);
+    //     /* fgets(buffer, 100, stdin); */
+    //     // strcpy(buffer, "Chewy\n");
+    // int send_res = send(handshake_socket, buffer, strlen(buffer)+1, 0); 
+    // printf("We send %d, %s\n", send_res, buffer);
+    //
+    //
+    //     // Waiting for server's response
+    // int recv_buffer_max_len = 100;
+    // char recv_buffer[recv_buffer_max_len];
+    // recv(handshake_socket, recv_buffer, recv_buffer_max_len, 0);
+    // puts(recv_buffer);
 
 
         // char isCont[50];
