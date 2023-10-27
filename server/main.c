@@ -37,22 +37,22 @@ void* client_handler(void* client_info) {
     
     int max_buffer_len = 1024;
     char buffer[max_buffer_len];
-    // char* buffer = malloc(sizeof(char) * max_buffer_len);
-
     
     // while ((recv_res =
     //             recv(connect_socket, buffer, max_buffer_len, 0)) > 0) {
     while(is_client_alive == true) {
         memset(buffer, 0, sizeof(buffer));
         int recv_res = recv(connect_socket, buffer, sizeof(buffer), 0);
-        /* printf("%d\n", recv_res); */
         if (recv_res == -1) {
             puts("something is wrong with recv in server");
             exit(0);
+        } else if (recv_res == 0) {
+            puts("they disconnected");
+            is_client_alive = false;
+        } else {
+            printf("%s\n", buffer);
         }
 
-        printf("%s\n", buffer);
-    
         // send(connect_socket, "auth", 4, 0);
         // printf("Before Login\n");
         // login(connect_socket, valid_user, 2);
@@ -64,7 +64,7 @@ void* client_handler(void* client_info) {
         // }
     
     }
-    /* close(connect_socket); */
+    close(connect_socket);
     /* pthread_exit(NULL); */
     return NULL;
 }
@@ -108,18 +108,12 @@ int main(int argc, char* argv[]) {
 
     while(true) {
 
-        struct sockaddr_in client_addr;
-        /* socklen_t client_addr_size; */
-        int client_addr_size = sizeof(client_addr);
+        struct sockaddr_storage client_addr;
+        socklen_t client_addr_size;
 
         int connect_socket = accept(handshake_socket,
                                     (struct sockaddr*) &client_addr,
                                     &client_addr_size);
-
-        printf("Client connected at %s port: %i\n", 
-                inet_ntoa(client_addr.sin_addr),
-                ntohs(client_addr.sin_port));
-
         if (connect_socket < 0) {
             perror("Something went wrong the accepting");
         }
@@ -137,7 +131,7 @@ int main(int argc, char* argv[]) {
                 (void*) &connect_socket);
     }
 
-    /* close(handshake_socket); */
+    close(handshake_socket);
 
     freeaddrinfo(res);
     return 0;
