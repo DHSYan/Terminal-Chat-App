@@ -16,10 +16,57 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <pthread.h>
 // My Own Modules
 #include "auth.h"
 #include "TCPServer.h"
 
+struct client_thread_info {
+    int socket;
+    struct user* valid_user;
+};
+
+void* client_handler(void* client_info) {
+    printf("I got called\n");
+    struct client_thread_info* client = 
+        (struct client_thread_info*) client_info;
+
+    int connect_socket = client->socket;
+    struct user* valid_user = client->valid_user;
+    int is_client_alive = true;
+    
+    int max_buffer_len = 10000;
+    char buffer[max_buffer_len];
+    // char* buffer = malloc(sizeof(char) * max_buffer_len);
+
+    
+    // while ((recv_res =
+    //             recv(connect_socket, buffer, max_buffer_len, 0)) > 0) {
+    while(is_client_alive == true) {
+        memset(buffer, 0, sizeof(buffer));
+        int recv_res = recv(connect_socket, buffer, sizeof(buffer), 0);
+        if (recv_res == -1) {
+            puts("something is wrong with recv in server");
+            exit(0);
+        }
+
+        printf("%s", buffer);
+    
+        // send(connect_socket, "auth", 4, 0);
+        // printf("Before Login\n");
+        // login(connect_socket, valid_user, 2);
+        // printf("After Login\n");
+       
+        // Taken this from Youtube Video by Jacob Sorber
+        // if (buffer[recv_res-1] == '\n') {
+        //     break;
+        // }
+    
+    }
+    close(connect_socket);
+    pthread_exit(NULL);
+    return NULL;
+}
 
 // This has to interact with the client
 int main(int argc, char* argv[]) {
@@ -56,50 +103,36 @@ int main(int argc, char* argv[]) {
     int queue_num = 10;
     int listen_res = listen(handshake_socket, queue_num);
 
+    pthread_t client_thread;
+
     while(true) {
 
         struct sockaddr_storage client_addr;
         socklen_t client_addr_size;
 
-        int connect_socket = 
-            accept(handshake_socket,
-                    (struct sockaddr*) &client_addr,
-                    &client_addr_size);
+        int connect_socket = accept(handshake_socket,
+                                    (struct sockaddr*) &client_addr,
+                                    &client_addr_size);
         if (connect_socket < 0) {
             perror("Something went wrong the accepting");
         }
-
-        int max_buffer_len = 10000;
-        char buffer[max_buffer_len];
-        // char* buffer = malloc(sizeof(char) * max_buffer_len);
-        memset(buffer, 0, strlen(buffer) * sizeof(char));
-
-        int recv_res;
-
-        while ((recv_res =
-                    recv(connect_socket, buffer, max_buffer_len, 0)) > 0) {
-            // recv_res = recv(connect_socket, buffer, sizeof(buffer), 0);
-            // printf("%s", buffer);
-
-            // send(connect_socket, "auth", 4, 0);
-            printf("Before Login\n");
-            login(connect_socket, valid_user, 2);
-            printf("After Login\n");
             
-            // Taken this from Youtube Video by Jacob Sorber
-            if (buffer[recv_res-1] == '\n') {
-                break;
-            }
-
-            memset(buffer, 0, strlen(buffer)*sizeof(char));
-        }
-        close(connect_socket);
+        struct client_thread_info* client_info =
+            malloc(sizeof(struct client_thread_info));
+        client_info->socket = connect_socket;
+        client_info->valid_user = valid_user;
+        
+        printf("Before threads\n");
+        pthread_create(
+                &client_thread,
+                NULL,
+                client_handler,
+                (void*) &client_info);
     }
 
     close(handshake_socket);
+
     freeaddrinfo(res);
-
-
     return 0;
 }
 
