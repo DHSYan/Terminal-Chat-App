@@ -21,17 +21,17 @@
 #include "auth.h"
 #include "TCPServer.h"
 
-/* struct client_thread_info { */
-/*     int socket; */
-/*     struct user* valid_user; */
-/* }; */
+struct client_thread_info {
+    int socket;
+    struct user* valid_user;
+};
 
 void* client_handler(void* client_info) {
     printf("I got called\n");
-    /* struct client_thread_info* client =  */
-    /*     (struct client_thread_info*) client_info; */
+    struct client_thread_info* client = 
+        (struct client_thread_info*) client_info;
 
-    int connect_socket = *(int*) client_info;
+    int connect_socket = client->socket;
     /* struct user* valid_user = client->valid_user; */
     int is_client_alive = true;
     
@@ -118,16 +118,16 @@ int main(int argc, char* argv[]) {
             perror("Something went wrong the accepting");
         }
             
-        /* struct client_thread_info* client_info = */
-        /*     malloc(sizeof(struct client_thread_info)); */
-        /* client_info->socket = connect_socket; */
-        /* client_info->valid_user = valid_user; */
+        struct client_thread_info* client_info =
+            malloc(sizeof(struct client_thread_info));
+        client_info->socket = connect_socket;
+        client_info->valid_user = valid_user;
         
         pthread_create(
                 &client_thread,
                 NULL,
                 client_handler,
-                (void*) &connect_socket);
+                (void*) client_info);
     }
 
     close(handshake_socket);
