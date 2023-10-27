@@ -123,7 +123,6 @@ int main(int argc, char* argv[]) {
         /* client_info->socket = connect_socket; */
         /* client_info->valid_user = valid_user; */
         
-        printf("Before threads\n");
         pthread_create(
                 &client_thread,
                 NULL,
