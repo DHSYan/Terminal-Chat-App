@@ -27,6 +27,7 @@ kanban-plugin: basic
 - [x] Have Server send stuff to client as a "protocol" msg
 - [x] Fix Blocking System (AUTH)
 - [x] Authentication System
+- [x] Multithreading
 
 
 

@@ -22,6 +22,22 @@
 #include <netdb.h>
 #include <stdbool.h>
 
+void send_command(int socket, char* command) {
+    char* withheader = malloc(sizeof(char)*100);
+    char* copy = malloc(sizeof(char)*100);
+    // strcpy(copy, command);
+    memset(withheader, 0, strlen(withheader));
+    strcat(withheader, "command: login");
+    // strcat(withheader, "login");
+
+    int send_res = send(socket, withheader, sizeof(withheader), 0);
+    if (send_res < 0) {
+        printf("send_command didn't send\n");
+    } else {
+        printf("[local] We sent '%s'...\n", withheader);
+    }
+}
+
 int main(int argc, char* argv[]) {
     struct addrinfo hints;
     struct addrinfo* res;
@@ -45,34 +61,18 @@ int main(int argc, char* argv[]) {
     if (connect_res < 0) { 
         perror("Couldn't Connect to server\n");
     }
-
-    while(true) {
-    /* send(handshake_socket, "hello", 5, 0); */
-    // char username_prompt_buffer[100];
-    // recv(handshake_socket, username_prompt_buffer, 100, 0);
-    // puts(username_prompt_buffer);
-        int buffer_max_len = 100;
-        char buffer[buffer_max_len];
-        printf("What do you want to send? ");
-        scanf("%99s", buffer);
-        int send_res = send(handshake_socket, buffer, sizeof(buffer), 0); 
-    }
-    //     /* fgets(buffer, 100, stdin); */
-    //     // strcpy(buffer, "Chewy\n");
-    // printf("We send %d, %s\n", send_res, buffer);
-    //
-    //
-    //     // Waiting for server's response
-    // int recv_buffer_max_len = 100;
-    // char recv_buffer[recv_buffer_max_len];
-    // recv(handshake_socket, recv_buffer, recv_buffer_max_len, 0);
-    // puts(recv_buffer);
-
-
-        // char isCont[50];
-        // scanf("%49s", isCont);
-    // }
     
+    char command[20];
+    char buffer[20];
+    while (true) {
+        send(handshake_socket, "hi", 2, 0);
+        recv(handshake_socket, buffer, sizeof(buffer), 0);
+        // printf("%s", buffer);
+        // fgets(command, 19, stdin);
+        // printf("we scanned %s\n", command);
+        send_command(handshake_socket, command);
+    }
+
     return 0;
 }
 

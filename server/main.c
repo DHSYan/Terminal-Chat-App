@@ -21,51 +21,75 @@
 #include "auth.h"
 #include "TCPServer.h"
 
+#define SMALL_BUF 100
+
 struct client_thread_info {
     int socket;
     struct user* valid_user;
 };
 
+void send_login(int socket) {
+    printf("Hello world\n");
+    send(socket, "hello world", 11, 0);
+}
+
+void listen_command(int socket, char* command) {
+    char prompt[20] = "[server] Command: ";
+    send(socket, prompt, sizeof(prompt), 0);
+    // If the command: string don't exist
+    // then it is not a command, ignore it
+    printf(" |  Listening for commands...\n");
+    /* printf("Command: %s\n", command); */
+    char buffer[SMALL_BUF]; 
+    memset(buffer, 0, sizeof(buffer));
+    int recv_res = recv(socket, buffer, sizeof(buffer), 0);
+    if (recv_res < 0) {
+        printf("Listing for command failed to recv\n");
+    }
+
+    char* function = malloc(sizeof(char)*SMALL_BUF);
+    char* substring = strstr(buffer, "command:");
+    if (substring == NULL) {
+        return;
+    } else if (strstr(buffer, "login") != NULL) {
+        printf("   |command is login, sending it...\n");
+        send_login(socket);
+    } else {
+        printf("What is this command? '%s'\n", buffer);
+    }
+}
+
+
 void* client_handler(void* client_info) {
-    printf("I got called\n");
+    printf("\n\n------------------New Client-------------------\n\n");
     struct client_thread_info* client = 
         (struct client_thread_info*) client_info;
 
     int connect_socket = client->socket;
-    /* struct user* valid_user = client->valid_user; */
+    struct user* valid_user = client->valid_user;
     int is_client_alive = true;
     
     int max_buffer_len = 1024;
     char buffer[max_buffer_len];
     
-    // while ((recv_res =
-    //             recv(connect_socket, buffer, max_buffer_len, 0)) > 0) {
-    while(is_client_alive == true) {
-        memset(buffer, 0, sizeof(buffer));
-        int recv_res = recv(connect_socket, buffer, sizeof(buffer), 0);
+    int recv_res;
+    memset(buffer, 0, sizeof(buffer));
+    while ((recv_res =
+                recv(connect_socket, buffer, max_buffer_len, 0)) > 0) {
+        printf("we got the init msg: %s\n", buffer);
+        /* int recv_res = recv(connect_socket, buffer, sizeof(buffer), 0); */
         if (recv_res == -1) {
             puts("something is wrong with recv in server");
             exit(0);
         } else if (recv_res == 0) {
             puts("they disconnected");
             is_client_alive = false;
-        } else {
-            printf("%s\n", buffer);
-        }
-
-        // send(connect_socket, "auth", 4, 0);
-        // printf("Before Login\n");
-        // login(connect_socket, valid_user, 2);
-        // printf("After Login\n");
-       
-        // Taken this from Youtube Video by Jacob Sorber
-        // if (buffer[recv_res-1] == '\n') {
-        //     break;
-        // }
-    
+        }     
+        memset(buffer, 0, sizeof(buffer));
+        listen_command(connect_socket, buffer);
+        memset(buffer, 0, sizeof(buffer));
     }
     close(connect_socket);
-    /* pthread_exit(NULL); */
     return NULL;
 }
 
