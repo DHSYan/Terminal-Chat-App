@@ -21,21 +21,21 @@
 #include "auth.h"
 #include "TCPServer.h"
 
-struct client_thread_info {
-    int socket;
-    struct user* valid_user;
-};
+/* struct client_thread_info { */
+/*     int socket; */
+/*     struct user* valid_user; */
+/* }; */
 
 void* client_handler(void* client_info) {
     printf("I got called\n");
-    struct client_thread_info* client = 
-        (struct client_thread_info*) client_info;
+    /* struct client_thread_info* client =  */
+    /*     (struct client_thread_info*) client_info; */
 
-    int connect_socket = client->socket;
-    struct user* valid_user = client->valid_user;
+    int connect_socket = *(int*) client_info;
+    /* struct user* valid_user = client->valid_user; */
     int is_client_alive = true;
     
-    int max_buffer_len = 10000;
+    int max_buffer_len = 1024;
     char buffer[max_buffer_len];
     // char* buffer = malloc(sizeof(char) * max_buffer_len);
 
@@ -45,12 +45,13 @@ void* client_handler(void* client_info) {
     while(is_client_alive == true) {
         memset(buffer, 0, sizeof(buffer));
         int recv_res = recv(connect_socket, buffer, sizeof(buffer), 0);
+        /* printf("%d\n", recv_res); */
         if (recv_res == -1) {
             puts("something is wrong with recv in server");
             exit(0);
         }
 
-        printf("%s", buffer);
+        printf("%s\n", buffer);
     
         // send(connect_socket, "auth", 4, 0);
         // printf("Before Login\n");
@@ -63,8 +64,8 @@ void* client_handler(void* client_info) {
         // }
     
     }
-    close(connect_socket);
-    pthread_exit(NULL);
+    /* close(connect_socket); */
+    /* pthread_exit(NULL); */
     return NULL;
 }
 
@@ -107,30 +108,36 @@ int main(int argc, char* argv[]) {
 
     while(true) {
 
-        struct sockaddr_storage client_addr;
-        socklen_t client_addr_size;
+        struct sockaddr_in client_addr;
+        /* socklen_t client_addr_size; */
+        int client_addr_size = sizeof(client_addr);
 
         int connect_socket = accept(handshake_socket,
                                     (struct sockaddr*) &client_addr,
                                     &client_addr_size);
+
+        printf("Client connected at %s port: %i\n", 
+                inet_ntoa(client_addr.sin_addr),
+                ntohs(client_addr.sin_port));
+
         if (connect_socket < 0) {
             perror("Something went wrong the accepting");
         }
             
-        struct client_thread_info* client_info =
-            malloc(sizeof(struct client_thread_info));
-        client_info->socket = connect_socket;
-        client_info->valid_user = valid_user;
+        /* struct client_thread_info* client_info = */
+        /*     malloc(sizeof(struct client_thread_info)); */
+        /* client_info->socket = connect_socket; */
+        /* client_info->valid_user = valid_user; */
         
         printf("Before threads\n");
         pthread_create(
                 &client_thread,
                 NULL,
                 client_handler,
-                (void*) &client_info);
+                (void*) &connect_socket);
     }
 
-    close(handshake_socket);
+    /* close(handshake_socket); */
 
     freeaddrinfo(res);
     return 0;

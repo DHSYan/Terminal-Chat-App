@@ -46,19 +46,19 @@ int main(int argc, char* argv[]) {
         perror("Couldn't Connect to server\n");
     }
 
-    // while(true) {
-    send(handshake_socket, "hello", 5, 0);
+    while(true) {
+    /* send(handshake_socket, "hello", 5, 0); */
     // char username_prompt_buffer[100];
     // recv(handshake_socket, username_prompt_buffer, 100, 0);
     // puts(username_prompt_buffer);
-
-    // int buffer_max_len = 100;
-    // char buffer[buffer_max_len];
-    // printf("What do you want to send? ");
-    // scanf("%10000s", buffer);
+        int buffer_max_len = 100;
+        char buffer[buffer_max_len];
+        printf("What do you want to send? ");
+        scanf("%99s", buffer);
+        int send_res = send(handshake_socket, buffer, sizeof(buffer), 0); 
+    }
     //     /* fgets(buffer, 100, stdin); */
     //     // strcpy(buffer, "Chewy\n");
-    // int send_res = send(handshake_socket, buffer, strlen(buffer)+1, 0); 
     // printf("We send %d, %s\n", send_res, buffer);
     //
     //
