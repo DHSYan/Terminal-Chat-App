@@ -12,6 +12,7 @@
 
 
 // Stdlib
+#include "logging.h"
 #include "stdlib.h"
 // #include <stdio.h>
 // #include <stdlib.h>
@@ -70,6 +71,10 @@ int main(int argc, char* argv[]) {
     global_info->seq_num = 0; 
     global_info->valid_user = valid_user;
 
+    // create the loggin files
+    FILE* userlog = init_logging("userlog.txt");
+    global_info->userlog = userlog;
+
     while(true) {
 
         struct sockaddr_storage client_addr;
@@ -88,6 +93,16 @@ int main(int argc, char* argv[]) {
 
         thread_info->socket = connect_socket;
         thread_info->global_info = global_info;
+
+        /* Reference:
+            // The casting information was taken from Beej's Guide in 
+            // Section 6.2
+            // and got the idea of inet_ntoa from course example
+        */
+        thread_info->addr = 
+            inet_ntoa((((struct sockaddr_in*)&client_addr)->sin_addr));
+        thread_info->port =
+            ntohs(((struct sockaddr_in*)&client_addr)->sin_port);
         
         pthread_create(
                 &client_thread,

@@ -7,6 +7,8 @@ void* client_handler(void* client_info) {
     printf("\n\n------------------New Client-------------------\n\n");
     struct thread_info* thread_info = 
         (struct thread_info*) client_info;
+    printf("    | addr: %s | port: %d\n----------------------\n", 
+            thread_info->addr, thread_info->port);
 
     int connect_socket = thread_info->socket;
     struct user* valid_user = thread_info->global_info->valid_user;

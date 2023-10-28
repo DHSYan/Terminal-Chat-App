@@ -1,5 +1,6 @@
 #include "auth.h"
 #include "client_handler.h"
+#include "logging.h"
 #include "stdlib.h"
 #include "interaction.h"
 #include "util.h"
@@ -9,6 +10,11 @@
 void send_login(struct thread_info* thread_info) {
     struct user* valid_user = thread_info->global_info->valid_user;
     int socket = thread_info->socket;
+
+    int seq_num = thread_info->global_info->seq_num;
+    FILE* userlog = thread_info->global_info->userlog;
+    char* addr = thread_info->addr;
+    int port = thread_info->port;
 
     print_all_valided_user(valid_user);
 
@@ -31,6 +37,7 @@ void send_login(struct thread_info* thread_info) {
 
         if (login_password_res == 0) {
             send(socket, "Welcome!", SMALL_BUF, 0);
+            log_login(seq_num, userlog, username,  addr, port);
         } else {
             send(socket, "bruh wrong password!", SMALL_BUF, 0);
         }

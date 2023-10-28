@@ -5,5 +5,5 @@
 FILE* init_logging(char* filename);
 
 // Run on successful logins.
-void log_login(int seq_num, FILE* file, char* username, char* addr, char* port);
+void log_login(int seq_num, FILE* file, char* username, char* addr, int port);
 #endif
