@@ -11,5 +11,8 @@
 #include <sys/types.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <time.h>
+
+#define SMALL_BUF 100
 
 // #endif
