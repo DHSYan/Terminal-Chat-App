@@ -32,4 +32,4 @@ logging.o: logging.c logging.h
 .PHONY: clean
 
 clean: 
-	rm ${EXEC} *.o
+	rm ${EXEC} *.o userlog.txt

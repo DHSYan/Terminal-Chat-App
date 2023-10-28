@@ -37,7 +37,8 @@ void send_login(struct thread_info* thread_info) {
 
         if (login_password_res == 0) {
             send(socket, "Welcome!", SMALL_BUF, 0);
-            log_login(seq_num, userlog, username,  addr, port);
+            log_login(thread_info, username);
+            thread_info->global_info->seq_num++;
         } else {
             send(socket, "bruh wrong password!", SMALL_BUF, 0);
         }
