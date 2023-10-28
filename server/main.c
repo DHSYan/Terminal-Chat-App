@@ -17,9 +17,16 @@
 #include <string.h>
 #include <stdbool.h>
 #include <pthread.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <netdb.h>
+#include <unistd.h>
+
 // My Own Modules
 #include "auth.h"
-#include "TCPServer.h"
+/* #include "TCPServer.h" */
+
 
 #define SMALL_BUF 100
 
@@ -36,19 +43,21 @@ void send_login(int socket) {
 void listen_command(int socket, char* command) {
     char prompt[20] = "[server] Command: ";
     send(socket, prompt, sizeof(prompt), 0);
-    // If the command: string don't exist
-    // then it is not a command, ignore it
-    printf(" |  Listening for commands...\n");
-    /* printf("Command: %s\n", command); */
+
     char buffer[SMALL_BUF]; 
     memset(buffer, 0, sizeof(buffer));
+    printf(" |  Listening for commands...\n");
     int recv_res = recv(socket, buffer, sizeof(buffer), 0);
+
     if (recv_res < 0) {
         printf("Listing for command failed to recv\n");
     }
 
     char* function = malloc(sizeof(char)*SMALL_BUF);
     char* substring = strstr(buffer, "command:");
+
+    // If the command: string don't exist
+    // then it is not a command, ignore it
     if (substring == NULL) {
         return;
     } else if (strstr(buffer, "login") != NULL) {
@@ -70,14 +79,15 @@ void* client_handler(void* client_info) {
     int is_client_alive = true;
     
     int max_buffer_len = 1024;
-    char buffer[max_buffer_len];
+    char* buffer = malloc(sizeof(char)*max_buffer_len);
+    memset(buffer, 0, strlen(buffer));
     
     int recv_res;
-    memset(buffer, 0, sizeof(buffer));
     while ((recv_res =
-                recv(connect_socket, buffer, max_buffer_len, 0)) > 0) {
-        printf("we got the init msg: %s\n", buffer);
+                recv(connect_socket, buffer, strlen(buffer), 0)) > 0) {
         /* int recv_res = recv(connect_socket, buffer, sizeof(buffer), 0); */
+        printf("we got the init msg: %s\n", buffer);
+
         if (recv_res == -1) {
             puts("something is wrong with recv in server");
             exit(0);
@@ -85,9 +95,9 @@ void* client_handler(void* client_info) {
             puts("they disconnected");
             is_client_alive = false;
         }     
-        memset(buffer, 0, sizeof(buffer));
+
         listen_command(connect_socket, buffer);
-        memset(buffer, 0, sizeof(buffer));
+        memset(buffer, 0, strlen(buffer));
     }
     close(connect_socket);
     return NULL;
