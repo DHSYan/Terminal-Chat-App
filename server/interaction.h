@@ -2,8 +2,8 @@
 #define INTERACTION_H
 
 
-void send_login(int socket);
+void send_login(struct user* valid_user, int socket);
 
-void listen_command(int socket, char* command);
+void listen_command(struct user* valid_user, int socket, char* command);
 
 #endif

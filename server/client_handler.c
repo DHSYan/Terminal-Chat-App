@@ -30,7 +30,7 @@ void* client_handler(void* client_info) {
             is_client_alive = false;
         }     
 
-        listen_command(connect_socket, buffer);
+        listen_command(client->valid_user, connect_socket, buffer);
         memset(buffer, 0, strlen(buffer)+1);
     }
     close(connect_socket);

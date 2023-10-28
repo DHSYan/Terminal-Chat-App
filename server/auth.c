@@ -22,7 +22,10 @@ void print_all_valided_user(struct user* lst) {
     }
 }
 
-struct user* load_credentials() {
+// max_attempt need for preping all the user struct 
+// This functions returns a pointer to struct user, that is a 
+// linkedlist, and it preps it with the inforamiot needed
+struct user* load_credentials(int max_attempt) {
     // reading a file: https://www.youtube.com/watch?v=fLPqn026DaE
     // struct user* valid_users = malloc(sizeof(struct user));
     struct user* valid_users = create_node(NULL);
@@ -41,7 +44,11 @@ struct user* load_credentials() {
                 is_user_name_done = true;
                 j = 0;
             } else if ( c == '\n' ) {
+                // if c == '\n' that means that we have finished
+                // scanning this user, now we fill this user's struct
+                // with inforamiot that is needed
                 cur->next = create_node(NULL);
+                cur->attempt = max_attempt;
                 cur=cur->next;
                 is_user_name_done = false;
                 j = 0;
@@ -66,7 +73,8 @@ struct user* load_credentials() {
 // -2: Not Registered User
 // 0: Registered_user and let user try password
 // -3: still blocked need to wait.
-int login_username(struct user *valid_users, int max_attempt, char* username) {
+// -1: error
+int login_username(struct user *valid_users, char* username) {
 
     remove_newline(username);
 
@@ -100,14 +108,38 @@ int login_username(struct user *valid_users, int max_attempt, char* username) {
             attempted_user->attempt = 1;
             return 0;
         } else {
-            attempted_user->attempt = max_attempt;
             return 0;
         }
     }
     // }
 }
 
-// int login_password(struct user* user
+// Return values
+// 0: correct password
+// -2: incorrect and blocked
+// -1: incorrect but can still retry 
+// 3: nothing
+int login_password(struct user* valid_user, char* username, char* password) {
+    struct user* user = return_user(username, valid_user);
+    printf("the user has: %d attempts\n", user->attempt);
+    while(user->attempt > 0) {
+
+        int is_correct_passwd = is_password_correct(password, user);
+        if (is_correct_passwd == true) {
+            printf("[local][log] correct passwd\n");
+            return 0;
+        } else if (is_correct_passwd == false && user->attempt == 1) {
+            printf("[local][log] incorrect password entered, and no more attempt, blocking\n");
+            block(user);
+            return -2;
+        } else {
+            printf("[local][log] incorrect password entered\n");
+            user->attempt--;
+            return -1;
+        }
+    }
+    return 3;
+}
 
 // Password
 /*

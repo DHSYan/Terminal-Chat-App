@@ -30,7 +30,7 @@
 #include "client_handler.h"
 
 int main(int argc, char* argv[]) {
-    struct user* valid_user = load_credentials();
+    struct user* valid_user = load_credentials(atoi(argv[2]));
 
     printf("\n\nInitializing Server..\n\n");
         

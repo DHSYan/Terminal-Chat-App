@@ -18,7 +18,7 @@ void print_all_valided_user(struct user* list_all_user);
 
 // load the file into a array of users
 // This should return a linked list of user
-struct user* load_credentials();
+struct user* load_credentials(int max_attempt);
 
 
 // Output to STDOUT
@@ -29,7 +29,9 @@ struct user* load_credentials();
 // else if max attempted reached
 // block()
 // loop back
-int login_username(struct user *valid_users, int max_attempt, char* username);
+int login_username(struct user *valid_users, char* username);
+
+int login_password(struct user* valid_user, char* username, char* password);
 
 // Checks if username exists within our linked list
 // if exist call return_user()
