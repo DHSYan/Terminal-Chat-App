@@ -76,7 +76,8 @@ struct user* load_credentials(int max_attempt) {
 // -1: error
 int login_username(struct user *valid_users, char* username) {
 
-    remove_newline(username);
+    // remove_newline(username); // We are going to assume that 
+    // string param are already prep
 
     struct user* attempted_user;
     // while (true) {
