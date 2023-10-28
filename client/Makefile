@@ -5,17 +5,16 @@ EXEC = client
 
 CC = gcc
 
-FILES = main.c connect-to-server.o 
+FILES = main.c connect-to-server.o interaction.o
 
 ${EXEC}: ${FILES}
 	${CC} ${FILES} -o ${EXEC}
 
-
-# auth.o: auth.c auth.h
-# 	${CC} -c auth.c
-
 connect-to-server.o: connect-to-server.c connect-to-server.h
 	${CC} -c connect-to-server.c
+
+interaction.o: interaction.c interaction.h
+	${CC} -c interaction.c
 
 .PHONY: clean
 

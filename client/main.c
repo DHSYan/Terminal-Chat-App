@@ -12,8 +12,6 @@
 
 
 // #include "connect-to-server.h"
-// #include "auth.h"
-// Stdlib
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,22 +20,8 @@
 #include <netdb.h>
 #include <stdbool.h>
 
-void send_command(int socket, char* command) {
-    char* header = malloc(sizeof(char)*100);
-    memset(header, 0, strlen(header));
-    strcpy(header, "command:");
+#include "interaction.h"
 
-    strcat(header, command);
-    printf("the final package looks like '%s'\n", header);
-
-    int send_res = send(socket, header, strlen(header)+1, 0);
-
-    if (send_res < 0) {
-        printf("send_command didn't send\n");
-    } else {
-        printf("We sent '%s'...\n", header);
-    }
-}
 
 int main(int argc, char* argv[]) {
     struct addrinfo hints;
