@@ -11,7 +11,7 @@
 //
 
 
-#include "connect-to-server.h"
+// #include "connect-to-server.h"
 // #include "auth.h"
 // Stdlib
 #include <stdio.h>
@@ -23,18 +23,17 @@
 #include <stdbool.h>
 
 void send_command(int socket, char* command) {
-    char* withheader = malloc(sizeof(char)*100);
-    char* copy = malloc(sizeof(char)*100);
-    // strcpy(copy, command);
-    memset(withheader, 0, strlen(withheader));
-    strcat(withheader, "command: login");
-    // strcat(withheader, "login");
+    char* header = malloc(sizeof(char)*100);
+    memset(header, 0, strlen(header));
+    strcpy(header, "command: ");
 
-    int send_res = send(socket, withheader, sizeof(withheader), 0);
+    strcat(header, command);
+
+    int send_res = send(socket, header, sizeof(header), 0);
     if (send_res < 0) {
         printf("send_command didn't send\n");
     } else {
-        printf("[local] We sent '%s'...\n", withheader);
+        printf("We sent '%s'...\n", header);
     }
 }
 
@@ -61,15 +60,20 @@ int main(int argc, char* argv[]) {
     if (connect_res < 0) { 
         perror("Couldn't Connect to server\n");
     }
+
+    /////////////////////////////////////////////////////////
     
-    char command[20];
-    char buffer[20];
+    char* command = malloc(sizeof(char)*100);
+    char* buffer = malloc(sizeof(char)*100);
+
+    char handshake[] = "[client] handshake";
+
     while (true) {
-        send(handshake_socket, "hi", 2, 0);
+        send(handshake_socket, handshake, 2, 0);
         recv(handshake_socket, buffer, sizeof(buffer), 0);
-        // printf("%s", buffer);
-        // fgets(command, 19, stdin);
-        // printf("we scanned %s\n", command);
+        printf("%s", buffer);
+        fgets(command, 99, stdin);
+        printf("we scanned %s\n", command);
         send_command(handshake_socket, command);
     }
 
