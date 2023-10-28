@@ -28,6 +28,7 @@
 #include "auth.h"
 #include "interaction.h"
 #include "client_handler.h"
+#include <stdlib.h>
 
 int main(int argc, char* argv[]) {
     struct user* valid_user = load_credentials(atoi(argv[2]));
@@ -65,6 +66,10 @@ int main(int argc, char* argv[]) {
 
     pthread_t client_thread;
 
+    struct global_info* global_info = malloc(sizeof(struct global_info));
+    global_info->seq_num = 0; 
+    global_info->valid_user = valid_user;
+
     while(true) {
 
         struct sockaddr_storage client_addr;
@@ -76,17 +81,19 @@ int main(int argc, char* argv[]) {
         if (connect_socket < 0) {
             perror("Something went wrong the accepting");
         }
-            
-        struct client_thread_info* client_info =
-            malloc(sizeof(struct client_thread_info));
-        client_info->socket = connect_socket;
-        client_info->valid_user = valid_user;
+
+        global_info->seq_num++; // Increase on each connection
+
+        struct thread_info* thread_info = malloc(sizeof(struct thread_info));
+
+        thread_info->socket = connect_socket;
+        thread_info->global_info = global_info;
         
         pthread_create(
                 &client_thread,
                 NULL,
                 client_handler,
-                (void*) client_info);
+                (void*) thread_info);
     }
 
     close(handshake_socket);

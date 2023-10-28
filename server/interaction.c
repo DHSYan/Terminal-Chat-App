@@ -1,11 +1,15 @@
 #include "auth.h"
+#include "client_handler.h"
 #include "stdlib.h"
 #include "interaction.h"
 #include "util.h"
 #define SMALL_BUF 100
 #define BUF 1024
 
-void send_login(struct user* valid_user, int socket) {
+void send_login(struct thread_info* thread_info) {
+    struct user* valid_user = thread_info->global_info->valid_user;
+    int socket = thread_info->socket;
+
     print_all_valided_user(valid_user);
 
     send(socket, "\n[server][input] Enter username: ", SMALL_BUF, 0);
@@ -38,13 +42,14 @@ void send_login(struct user* valid_user, int socket) {
     }
 }
 
-
 // return value:
 // 0 sucess!
 // -1 they dc-ed
 // -2 not a command feedback
 // -3 invalid command
-int listen_command(struct user* valid_user, int socket, char* command) {
+int listen_command(struct thread_info* thread_info,
+                  int socket, char* command) 
+{
     char* prompt = malloc(sizeof(char)*100);
     strcpy(prompt, "[server] Command: ");
     send(socket, prompt, strlen(prompt)+1, 0);
@@ -67,7 +72,7 @@ int listen_command(struct user* valid_user, int socket, char* command) {
         return -2;
     } else if (strstr(buffer, "login") != NULL) {
         printf("   | command is login, sending it...\n");
-        send_login(valid_user, socket);
+        send_login(thread_info);
         return 0;
     } else {
         printf("What is this command? '%s'\n", buffer);

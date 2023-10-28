@@ -5,11 +5,11 @@
 
 void* client_handler(void* client_info) {
     printf("\n\n------------------New Client-------------------\n\n");
-    struct client_thread_info* client = 
-        (struct client_thread_info*) client_info;
+    struct thread_info* thread_info = 
+        (struct thread_info*) client_info;
 
-    int connect_socket = client->socket;
-    struct user* valid_user = client->valid_user;
+    int connect_socket = thread_info->socket;
+    struct user* valid_user = thread_info->global_info->valid_user;
     int is_client_alive = false;
     
     int max_buffer_len = 1024;
@@ -34,7 +34,7 @@ void* client_handler(void* client_info) {
     }
     
     while (is_client_alive) {
-        is_client_alive = listen_command(client->valid_user, connect_socket, buffer);
+        is_client_alive = listen_command(thread_info, connect_socket, buffer);
         memset(buffer, 0, strlen(buffer)+1);
     }
 
