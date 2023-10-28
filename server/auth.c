@@ -61,31 +61,56 @@ struct user* load_credentials() {
    return valid_users;
 }
 
-int login(int socket, struct user *valid_users, int max_attempt) {
-    char username[100];
-    char password[100];
+// max_attempted's origin should only come from the command line
+// Return value meaning
+// -2: Not Registered User
+// 0: Registered_user and let user try password
+// -3: still blocked need to wait.
+int login_username(struct user *valid_users, int max_attempt, char* username) {
+
+    remove_newline(username);
 
     struct user* attempted_user;
-    while (true) {
-        const char* username_prompt = "Username: ";
-        send(socket, username_prompt, strlen(username_prompt), 0);
-        recv(socket, username, sizeof(username), 0); 
-        remove_newline(username);
+    // while (true) {
+        // const char* username_prompt = "Username: ";
+        // send(socket, username_prompt, strlen(username_prompt), 0);
+        // recv(socket, username, sizeof(username), 0); 
+        // remove_newline(username);
 
-        if (is_registered_user(username, valid_users) == false) {
-            printf("You are not a regitstered User, try again\n");
-            continue;
+    if (is_registered_user(username, valid_users) == false) {
+        printf("You are not a regitstered User, try again\n");
+        return -2;
+        // continue;
+    } else {
+        attempted_user = return_user(username, valid_users);
+        /*
+        if (is_blocked(attempted_user) == true
+                && blocked_for(attempted_user) < 10) {
+            printf("You are blocked please wait\n");
+            return -3;
+        }*/
+
+        // if attempt == 0, then the user is blocked
+        if (attempted_user->attempt == 0 && blocked_for(attempted_user) < 10) {
+            printf("You are blocked please wait\n");
+            return -3;
+        } else if (attempted_user->attempt == 0) {
+            // if after 10 has passed, even if attempt == 0, the user
+            // has one more chance. And they are blocked another time
+            attempted_user->attempt = 1;
+            return 0;
         } else {
-            attempted_user = return_user(username, valid_users);
-            if (is_blocked(attempted_user) == true
-                    && blocked_for(attempted_user) < 10) {
-                printf("You are blocked please wait\n");
-            } else {
-                break;
-            }
+            attempted_user->attempt = max_attempt;
+            return 0;
         }
     }
+    // }
+}
 
+// int login_password(struct user* user
+
+// Password
+/*
     int attempt_num = 0;
     while (attempt_num < max_attempt) {
         printf("\nPlease enter password for %s: ", username);
@@ -104,6 +129,7 @@ int login(int socket, struct user *valid_users, int max_attempt) {
 
     return -1;
 }
+*/
 
 int is_registered_user(char username[], struct user* valid_users) {
     for (struct user* cur = valid_users; cur != NULL; cur=cur->next) {
