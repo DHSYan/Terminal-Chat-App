@@ -120,4 +120,5 @@ file (`userlog.txt`)
 1. catupre and Display Live Video
   - We will just tramsmit and recieve video files
 
-
+# Notes
+1. All login function should probably take inputs, param in terms of texts
