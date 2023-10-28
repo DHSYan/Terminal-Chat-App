@@ -37,17 +37,19 @@ struct client_thread_info {
 
 void send_login(int socket) {
     printf("Hello world\n");
-    send(socket, "hello world", 11, 0);
+    send(socket, "hello world\0", 12, 0);
 }
 
 void listen_command(int socket, char* command) {
-    char prompt[20] = "[server] Command: ";
-    send(socket, prompt, sizeof(prompt), 0);
+    char* prompt = malloc(sizeof(char)*100);
+    strcpy(prompt, "[server] Command: ");
+    send(socket, prompt, strlen(prompt)+1, 0);
 
-    char buffer[SMALL_BUF]; 
-    memset(buffer, 0, sizeof(buffer));
+    char* buffer = malloc(sizeof(char)*100);
+    // memset(buffer, 0, strlen(buffer)+1);
+
     printf(" |  Listening for commands...\n");
-    int recv_res = recv(socket, buffer, sizeof(buffer), 0);
+    int recv_res = recv(socket, buffer, 100, 0);
 
     if (recv_res < 0) {
         printf("Listing for command failed to recv\n");
@@ -80,11 +82,11 @@ void* client_handler(void* client_info) {
     
     int max_buffer_len = 1024;
     char* buffer = malloc(sizeof(char)*max_buffer_len);
-    memset(buffer, 0, strlen(buffer));
+    // memset(buffer, 0, strlen(buffer)+1);
     
     int recv_res;
     while ((recv_res =
-                recv(connect_socket, buffer, strlen(buffer), 0)) > 0) {
+                recv(connect_socket, buffer, max_buffer_len, 0)) > 0) {
         /* int recv_res = recv(connect_socket, buffer, sizeof(buffer), 0); */
         printf("we got the init msg: %s\n", buffer);
 
@@ -97,7 +99,7 @@ void* client_handler(void* client_info) {
         }     
 
         listen_command(connect_socket, buffer);
-        memset(buffer, 0, strlen(buffer));
+        memset(buffer, 0, strlen(buffer)+1);
     }
     close(connect_socket);
     return NULL;

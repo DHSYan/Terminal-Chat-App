@@ -25,11 +25,13 @@
 void send_command(int socket, char* command) {
     char* header = malloc(sizeof(char)*100);
     memset(header, 0, strlen(header));
-    strcpy(header, "command: ");
+    strcpy(header, "command:");
 
     strcat(header, command);
+    printf("the final package looks like '%s'\n", header);
 
-    int send_res = send(socket, header, sizeof(header), 0);
+    int send_res = send(socket, header, strlen(header)+1, 0);
+
     if (send_res < 0) {
         printf("send_command didn't send\n");
     } else {
@@ -65,12 +67,13 @@ int main(int argc, char* argv[]) {
     
     char* command = malloc(sizeof(char)*100);
     char* buffer = malloc(sizeof(char)*100);
+    char* handshake = malloc(sizeof(char)*100);
+    strcpy(handshake, "[client] Hello");
 
-    char handshake[] = "[client] handshake";
-
+    
+    send(handshake_socket, handshake, strlen(handshake)+1, 0);
     while (true) {
-        send(handshake_socket, handshake, 2, 0);
-        recv(handshake_socket, buffer, sizeof(buffer), 0);
+        recv(handshake_socket, buffer, 100, 0);
         printf("%s", buffer);
         fgets(command, 99, stdin);
         printf("we scanned %s\n", command);
