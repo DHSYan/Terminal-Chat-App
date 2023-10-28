@@ -12,100 +12,23 @@
 
 
 // Stdlib
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include <pthread.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
-#include <netdb.h>
-#include <unistd.h>
+#include "stdlib.h"
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <stdbool.h>
+// #include <pthread.h>
+// #include <sys/socket.h>
+// #include <arpa/inet.h>
+// #include <sys/types.h>
+// #include <netdb.h>
+// #include <unistd.h>
 
 // My Own Modules
 #include "auth.h"
-/* #include "TCPServer.h" */
+#include "interaction.h"
+#include "client_handler.h"
 
-
-#define SMALL_BUF 100
-
-struct client_thread_info {
-    int socket;
-    struct user* valid_user;
-};
-
-void send_login(int socket) {
-    printf("Hello world\n");
-    send(socket, "hello world\0", 12, 0);
-}
-
-void listen_command(int socket, char* command) {
-    char* prompt = malloc(sizeof(char)*100);
-    strcpy(prompt, "[server] Command: ");
-    send(socket, prompt, strlen(prompt)+1, 0);
-
-    char* buffer = malloc(sizeof(char)*100);
-    // memset(buffer, 0, strlen(buffer)+1);
-
-    printf(" |  Listening for commands...\n");
-    int recv_res = recv(socket, buffer, 100, 0);
-
-    if (recv_res < 0) {
-        printf("Listing for command failed to recv\n");
-    }
-
-    char* function = malloc(sizeof(char)*SMALL_BUF);
-    char* substring = strstr(buffer, "command:");
-
-    // If the command: string don't exist
-    // then it is not a command, ignore it
-    if (substring == NULL) {
-        return;
-    } else if (strstr(buffer, "login") != NULL) {
-        printf("   |command is login, sending it...\n");
-        send_login(socket);
-    } else {
-        printf("What is this command? '%s'\n", buffer);
-    }
-}
-
-
-void* client_handler(void* client_info) {
-    printf("\n\n------------------New Client-------------------\n\n");
-    struct client_thread_info* client = 
-        (struct client_thread_info*) client_info;
-
-    int connect_socket = client->socket;
-    struct user* valid_user = client->valid_user;
-    int is_client_alive = true;
-    
-    int max_buffer_len = 1024;
-    char* buffer = malloc(sizeof(char)*max_buffer_len);
-    // memset(buffer, 0, strlen(buffer)+1);
-    
-    int recv_res;
-    while ((recv_res =
-                recv(connect_socket, buffer, max_buffer_len, 0)) > 0) {
-        /* int recv_res = recv(connect_socket, buffer, sizeof(buffer), 0); */
-        printf("we got the init msg: %s\n", buffer);
-
-        if (recv_res == -1) {
-            puts("something is wrong with recv in server");
-            exit(0);
-        } else if (recv_res == 0) {
-            puts("they disconnected");
-            is_client_alive = false;
-        }     
-
-        listen_command(connect_socket, buffer);
-        memset(buffer, 0, strlen(buffer)+1);
-    }
-    close(connect_socket);
-    return NULL;
-}
-
-// This has to interact with the client
 int main(int argc, char* argv[]) {
     struct user* valid_user = load_credentials();
 
