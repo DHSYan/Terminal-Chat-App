@@ -35,8 +35,8 @@ struct message* create_message(char* string) {
     strcpy(res->username, username);
     strcpy(res->msg, message);
     
-    printf("We parsed the username %s\n", res->username);
-    printf("We parsed the password %s\n", res->msg);
+    // printf("We parsed the username %s\n", res->username);
+    // printf("We parsed the password %s\n", res->msg);
 
     return res;
 }

@@ -67,7 +67,7 @@ int listen_command(struct thread_info* thread_info,
                   int socket, char* command) 
 {
     char* prompt = malloc(sizeof(char)*100);
-    strcpy(prompt, "[server] Command: ");
+    strcpy(prompt, "[server] command: ");
     send(socket, prompt, strlen(prompt)+1, 0);
 
     char* buffer = malloc(sizeof(char)*100);

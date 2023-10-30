@@ -19,8 +19,47 @@
 #include <sys/types.h>
 #include <netdb.h>
 #include <stdbool.h>
+#include <pthread.h>
 
 #include "interaction.h"
+
+#define SMALL_BUF 100
+
+struct server_message {
+    char message[SMALL_BUF];
+    int socket;
+};
+
+void* listening(void* socket) {
+    int* mySocket = (int*) socket;
+    char buffer[SMALL_BUF];
+    while(true) {
+        recv(*mySocket, buffer, SMALL_BUF, 0);
+        printf("thread: \n  %s\n", buffer);
+        memset(buffer, 0, sizeof(buffer));
+    }
+    return NULL;
+}
+
+void* response(void* server_message) {
+    struct server_message* message = (struct server_message*) server_message;
+    // char* mymessage = message->message;
+    char* send_buffer = malloc(sizeof(char) * SMALL_BUF);
+    // if (strstr(message->message, "command") != NULL) {
+    //     printf("Enter command: ");
+    //     fgets(send_buffer, 99, stdin);
+    //     send(message->socket, send_buffer, SMALL_BUF, 0);
+    // } else {
+    //     printf("Server response:\n  %s ", message->message);
+    //     fgets(send_buffer, 99, stdin);
+    //     send(message->socket, send_buffer, SMALL_BUF, 0);
+    // }
+    printf("Server response:\n  %s ", message->message);
+    fgets(send_buffer, 99, stdin);
+    send(message->socket, send_buffer, SMALL_BUF, 0);
+
+    return NULL;
+}
 
 
 int main(int argc, char* argv[]) {
@@ -58,22 +97,34 @@ int main(int argc, char* argv[]) {
     
     int init_handshack = 
         send(handshake_socket, handshake, strlen(handshake)+1, 0);
+    
+    // pthread_t listening_thread;
+    //
+    // pthread_create(&listening_thread, NULL, listening, (void*) &handshake_socket);
 
+    pthread_t response_thread;
 
     while (true) {
-        printf("\n\n--------------------------We are listening....\n");
+        // printf("\n\n--------------------------We are listening....\n");
         int server_res = 
             recv(handshake_socket, recv_buffer, 100, 0);
-        printf("Server response: %s ", recv_buffer);
-        fgets(send_buffer, 99, stdin);
-        printf("we scanned %s\n", send_buffer);
+        // printf("Server response: %s ", recv_buffer);
+
+        struct server_message* message = malloc(sizeof(struct server_message));
+        strcpy(message->message, recv_buffer);
+        memset(recv_buffer, 0, SMALL_BUF);
+
+        message->socket = handshake_socket;
+        pthread_create(&response_thread, NULL, response, (void*) message);
+        // fgets(send_buffer, 99, stdin);
+        // printf("we scanned %s\n", send_buffer);
         // if (needcommand) {
         //     send_command(handshake_socket, command);
         //     needcommand=false;
         // } else {
         //     send(handshake_socket, send_buffer, 100, 0);
         // }
-        send(handshake_socket, send_buffer, 100, 0);
+        // send(handshake_socket, send_buffer, 100, 0);
     }
 
     return 0;
