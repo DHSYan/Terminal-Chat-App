@@ -5,7 +5,7 @@ EXEC = server
 
 CC = gcc
 
-FILES = main.c auth.o TCPServer.o util.o interaction.o client_handler.o logging.o
+FILES = main.c auth.o TCPServer.o util.o interaction.o client_handler.o logging.o messaging.o
 
 ${EXEC}: ${FILES}
 	${CC} ${FILES} -o ${EXEC}
@@ -28,6 +28,9 @@ client_handler.o: client_handler.c client_handler.h
 
 logging.o: logging.c logging.h
 	${CC} -c logging.c
+
+messaging.o: messaging.c messaging.h
+	${CC} -c messaging.c
 
 .PHONY: clean
 

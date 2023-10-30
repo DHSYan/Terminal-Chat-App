@@ -1,6 +1,7 @@
 #include "auth.h"
 #include "client_handler.h"
 #include "logging.h"
+#include "messaging.h"
 #include "stdlib.h"
 #include "interaction.h"
 #include "util.h"
@@ -38,6 +39,9 @@ void send_login(struct thread_info* thread_info) {
         if (login_password_res == 0) {
             send(socket, "Welcome!", SMALL_BUF, 0);
             log_login(thread_info, username);
+            struct user* user = 
+                return_user(username, valid_user);
+            user->socket = socket;
             thread_info->global_info->seq_num++;
         } else {
             send(socket, "bruh wrong password!", SMALL_BUF, 0);
@@ -72,7 +76,7 @@ int listen_command(struct thread_info* thread_info,
     }
 
     char* function = malloc(sizeof(char)*SMALL_BUF);
-    char* substring = strstr(buffer, "command:");
+    char* substring = strchr(buffer, '/');
 
     // If the command: string don't exist
     // then it is not a command, ignore it
@@ -81,6 +85,12 @@ int listen_command(struct thread_info* thread_info,
     } else if (strstr(buffer, "login") != NULL) {
         printf("   | command is login, sending it...\n");
         send_login(thread_info);
+        return 0;
+    } else if (strstr(buffer, "msgto") != NULL) {
+        printf("   | command is msgto, sending it...\n");
+        struct message* message = create_message(buffer);
+        printf(" the message is %s\n", message->msg);
+        send_message(message, thread_info->global_info->valid_user);
         return 0;
     } else {
         printf("What is this command? '%s'\n", buffer);

@@ -8,6 +8,10 @@ struct user {
     char* password;
     time_t blocked_time;
     int attempt;
+    bool isActive;
+    // char* addr;
+    // int port; 
+    int socket;
     struct user* next;
 };
 
