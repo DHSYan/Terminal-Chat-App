@@ -27,16 +27,18 @@ void* client_handler(void* client_info) {
     if (recv_res == -1) {
         puts("something is wrong with recv in server");
         exit(0);
-    } else if (recv_res == 0) {
-        puts("they disconnected");
-        is_client_alive = false;
-    } else {
+    } 
+    // else if (recv_res == 0) {
+    //     puts("they disconnected");
+    //     is_client_alive = false;
+    // } 
+    else {
         is_client_alive = true;
         printf("\n\n--------------entering loop of listening to commands------------------\n");
     }
     
     while (is_client_alive) {
-        is_client_alive = listen_command(thread_info, connect_socket, buffer);
+        listen_command(thread_info, connect_socket, buffer);
         memset(buffer, 0, strlen(buffer)+1);
     }
 

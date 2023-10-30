@@ -19,6 +19,7 @@ struct user* create_node(struct user* next);
 
 // Debug
 void print_all_valided_user(struct user* list_all_user);
+void print_user(struct user* user);
 
 // load the file into a array of users
 // This should return a linked list of user

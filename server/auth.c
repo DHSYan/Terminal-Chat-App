@@ -13,13 +13,25 @@ struct user* create_node(struct user* next) {
     res->username = malloc(sizeof(char) * 1000);
     res->password = malloc(sizeof(char) * 1000);
     res->next = next;
+    res->socket = 0;
     return res;
 }
 void print_all_valided_user(struct user* lst) {
     for (struct user* cur = lst; cur != NULL; cur=cur->next) {
         printf("%s ", cur->username);
-        printf("%s\n", cur->password);
+        printf("%s ", cur->password);
+        printf("%d\n", cur->socket);
     }
+}
+
+void print_user(struct user* user) {
+    printf("\n\n-----------------User %s---------\n", user->username);
+    printf("    password: %s\n", user->password);
+    printf("    Attempt Left: %d\n", user->attempt);
+    printf("    socket num: %d\n", user->socket);
+    printf("    isActive: %d\n", user->isActive);
+    printf("    next user addr: %p\n", user->next);
+    printf("----------------end------------------\n\n");
 }
 
 // max_attempt need for preping all the user struct 

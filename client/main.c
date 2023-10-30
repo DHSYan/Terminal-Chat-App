@@ -58,7 +58,8 @@ int main(int argc, char* argv[]) {
     
     int init_handshack = 
         send(handshake_socket, handshake, strlen(handshake)+1, 0);
-    // int needcommand = true;
+
+
     while (true) {
         printf("\n\n--------------------------We are listening....\n");
         int server_res = 

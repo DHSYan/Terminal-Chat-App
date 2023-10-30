@@ -41,6 +41,9 @@ void send_login(struct thread_info* thread_info) {
             log_login(thread_info, username);
             struct user* user = 
                 return_user(username, valid_user);
+            if (user == NULL) {
+                printf("No user with %s found\n", username);
+            }
             user->socket = socket;
             thread_info->global_info->seq_num++;
         } else {
@@ -52,6 +55,7 @@ void send_login(struct thread_info* thread_info) {
     } else if (login_username_res == -3) {
         send(socket, "You are still blocked wait\n", SMALL_BUF, 0);
     }
+    printf("finshed with sending_logging\n");
 }
 
 // return value:
