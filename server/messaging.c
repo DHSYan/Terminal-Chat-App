@@ -8,6 +8,8 @@ struct message* create_message(char* string) {
     // char* command_init = strchr(string, '/');
     char username[SMALL_BUF];
     char message[SMALL_BUF];
+    strcat(message, "[server][message]|");
+
     int j = 0;
 
     for (int i = 7; !isspace(string[i]); i++)  {
@@ -25,15 +27,16 @@ struct message* create_message(char* string) {
 
 
     j++;
-    int k = 0;
+    int k = strlen(message);
     for (int i = j+7; string[i]; i++) {
         message[k] = string[i];
         k++;
     }
     message[k] = '\0';
 
+
     strcpy(res->username, username);
-    strcpy(res->msg, message);
+    strcat(res->msg, message);
     
     // printf("We parsed the username %s\n", res->username);
     // printf("We parsed the password %s\n", res->msg);

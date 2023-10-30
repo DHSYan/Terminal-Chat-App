@@ -19,7 +19,7 @@ void send_login(struct thread_info* thread_info) {
 
     print_all_valided_user(valid_user);
 
-    send(socket, "\n[server][input] Enter username: ", SMALL_BUF, 0);
+    send(socket, "[server][input]|Enter username: ", SMALL_BUF, 0);
     char* username = malloc(sizeof(char)*BUF);
     recv(socket, username, BUF, 0);
     remove_trailing_space(username);
@@ -27,7 +27,7 @@ void send_login(struct thread_info* thread_info) {
 
     int login_username_res = login_username(valid_user, username);
     if (login_username_res == 0) {
-        send(socket, "\n[server][input] Enter passward: ", SMALL_BUF, 0);
+        send(socket, "[server][input]|Enter passward: ", SMALL_BUF, 0);
 
         char* password = malloc(sizeof(char)*BUF);
         recv(socket, password, BUF, 0);
@@ -37,7 +37,7 @@ void send_login(struct thread_info* thread_info) {
             login_password(valid_user, username, password);
 
         if (login_password_res == 0) {
-            send(socket, "Welcome!", SMALL_BUF, 0);
+            send(socket, "[server][message]|Welcome!", SMALL_BUF, 0);
             log_login(thread_info, username);
             struct user* user = 
                 return_user(username, valid_user);
@@ -47,13 +47,13 @@ void send_login(struct thread_info* thread_info) {
             user->socket = socket;
             thread_info->global_info->seq_num++;
         } else {
-            send(socket, "bruh wrong password!", SMALL_BUF, 0);
+            send(socket, "[server][message]|bruh wrong password!", SMALL_BUF, 0);
         }
 
     } else if (login_username_res == -2) {
-        send(socket, "You are not registered\n", SMALL_BUF, 0);
+        send(socket, "[server][message]|You are not registered\n", SMALL_BUF, 0);
     } else if (login_username_res == -3) {
-        send(socket, "You are still blocked wait\n", SMALL_BUF, 0);
+        send(socket, "[server][message]|You are still blocked wait\n", SMALL_BUF, 0);
     }
     printf("finshed with sending_logging\n");
 }
@@ -67,7 +67,7 @@ int listen_command(struct thread_info* thread_info,
                   int socket, char* command) 
 {
     char* prompt = malloc(sizeof(char)*100);
-    strcpy(prompt, "[server] command: ");
+    strcpy(prompt, "[server][prompt][input]|Enter Command: ");
     send(socket, prompt, strlen(prompt)+1, 0);
 
     char* buffer = malloc(sizeof(char)*100);
@@ -86,11 +86,11 @@ int listen_command(struct thread_info* thread_info,
     // then it is not a command, ignore it
     if (substring == NULL) {
         return -2;
-    } else if (strstr(buffer, "login") != NULL) {
+    } else if (strstr(buffer, "/login") != NULL) {
         printf("   | command is login, sending it...\n");
         send_login(thread_info);
         return 0;
-    } else if (strstr(buffer, "msgto") != NULL) {
+    } else if (strstr(buffer, "/msgto") != NULL) {
         printf("   | command is msgto, sending it...\n");
         struct message* message = create_message(buffer);
         printf(" the message is %s\n", message->msg);

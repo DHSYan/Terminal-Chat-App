@@ -54,9 +54,15 @@ void* response(void* server_message) {
     //     fgets(send_buffer, 99, stdin);
     //     send(message->socket, send_buffer, SMALL_BUF, 0);
     // }
-    printf("Server response:\n  %s ", message->message);
-    fgets(send_buffer, 99, stdin);
-    send(message->socket, send_buffer, SMALL_BUF, 0);
+    char* actual_message = strchr(message->message, '|');
+    printf("Server response:\n  %s ", actual_message);
+    if (strstr(message->message, "[input]") != NULL) {
+        fgets(send_buffer, 99, stdin);
+        send(message->socket, send_buffer, SMALL_BUF, 0);
+    } else {
+        printf("Ok");
+        // send(message->socket, "OK", SMALL_BUF, 0);
+    }
 
     return NULL;
 }
