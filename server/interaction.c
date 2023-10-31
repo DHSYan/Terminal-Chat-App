@@ -51,6 +51,9 @@ void send_login(struct thread_info* thread_info) {
             user->isActive = true;
             user->socket = socket;
             time_t timer = time(NULL);
+            strcpy(user->addr, thread_info->addr);
+            user->port = thread_info->port;
+            
             strcpy(user->last_log_on, asctime(localtime(&timer)));
 
             thread_info->global_info->seq_num++;
@@ -77,7 +80,7 @@ void print_active_user(struct thread_info* thread_info) {
                     "   They have been active since %s\n"
                     "   Their addr: %s\n"
                     "   Their port: %d\n",
-                    cur->username, cur->last_log_on, cur->last_log_on, 696969);
+                    cur->username, cur->last_log_on, cur->addr, cur->port);
             printf("%s", send_buffer);
             send(thread_info->socket, send_buffer, sizeof(send_buffer), 0);
         }
