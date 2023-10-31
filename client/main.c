@@ -26,7 +26,7 @@
 #define SMALL_BUF 100
 
 struct server_message {
-    char message[SMALL_BUF];
+    char message[1000];
     int socket;
 };
 
@@ -55,7 +55,12 @@ void* response(void* server_message) {
     //     send(message->socket, send_buffer, SMALL_BUF, 0);
     // }
     char* actual_message = strchr(message->message, '|');
-    printf("Server response:\n  %s ", actual_message);
+    if (actual_message == NULL) {
+        printf("Server sent an invalid message with invalid format\n");
+    } else {
+        printf("Server response:\n  %s ", actual_message);
+    }
+
     if (strstr(message->message, "[input]") != NULL) {
         fgets(send_buffer, 99, stdin);
         send(message->socket, send_buffer, SMALL_BUF, 0);
@@ -113,7 +118,7 @@ int main(int argc, char* argv[]) {
     while (true) {
         // printf("\n\n--------------------------We are listening....\n");
         int server_res = 
-            recv(handshake_socket, recv_buffer, 100, 0);
+            recv(handshake_socket, recv_buffer, 1000, 0);
         // printf("Server response: %s ", recv_buffer);
 
         struct server_message* message = malloc(sizeof(struct server_message));

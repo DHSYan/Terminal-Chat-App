@@ -9,9 +9,10 @@ struct user {
     time_t blocked_time;
     int attempt;
     bool isActive;
-    // char* addr;
-    // int port; 
+    char* addr;
+    int port; 
     int socket;
+    char* last_log_on;
     struct user* next;
 };
 

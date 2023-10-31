@@ -12,7 +12,9 @@ struct user* create_node(struct user* next) {
     struct user* res = malloc(sizeof(struct user));
     res->username = malloc(sizeof(char) * 1000);
     res->password = malloc(sizeof(char) * 1000);
+    res->last_log_on = malloc(sizeof(char) *1000);
     res->next = next;
+    res->isActive = false;
     res->socket = 0;
     return res;
 }

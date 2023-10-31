@@ -7,6 +7,7 @@ struct thread_info {
     int socket;
     char* addr;
     int port;
+    struct user* thread_user;
 
 };
 

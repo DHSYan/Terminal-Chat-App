@@ -5,6 +5,9 @@
 #include "stdlib.h"
 #include "interaction.h"
 #include "util.h"
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
 #define SMALL_BUF 100
 #define BUF 1024
 
@@ -41,10 +44,15 @@ void send_login(struct thread_info* thread_info) {
             log_login(thread_info, username);
             struct user* user = 
                 return_user(username, valid_user);
+            thread_info->thread_user = user;
             if (user == NULL) {
                 printf("No user with %s found\n", username);
             }
+            user->isActive = true;
             user->socket = socket;
+            time_t timer = time(NULL);
+            strcpy(user->last_log_on, asctime(localtime(&timer)));
+
             thread_info->global_info->seq_num++;
         } else {
             send(socket, "[server][message]|bruh wrong password!", SMALL_BUF, 0);
@@ -56,6 +64,24 @@ void send_login(struct thread_info* thread_info) {
         send(socket, "[server][message]|You are still blocked wait\n", SMALL_BUF, 0);
     }
     printf("finshed with sending_logging\n");
+}
+
+void print_active_user(struct thread_info* thread_info) {
+    char send_buffer[1000];
+    for (struct user* cur = thread_info->global_info->valid_user; 
+             cur; cur=cur->next) {
+        if (cur->isActive && (thread_info->thread_user != cur)) {
+            sprintf(send_buffer, 
+                    "[server][message]|"
+                    "%s is Currently Active\n"
+                    "   They have been active since %s\n"
+                    "   Their addr: %s\n"
+                    "   Their port: %d\n",
+                    cur->username, cur->last_log_on, cur->last_log_on, 696969);
+            printf("%s", send_buffer);
+            send(thread_info->socket, send_buffer, sizeof(send_buffer), 0);
+        }
+    }
 }
 
 // return value:
@@ -95,6 +121,9 @@ int listen_command(struct thread_info* thread_info,
         struct message* message = create_message(buffer);
         printf(" the message is %s\n", message->msg);
         send_message(message, thread_info->global_info->valid_user);
+        return 0;
+    } else if (strstr(buffer, "/activeuser") != NULL) {
+        print_active_user(thread_info);
         return 0;
     } else {
         printf("What is this command? '%s'\n", buffer);
