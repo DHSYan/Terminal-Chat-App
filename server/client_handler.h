@@ -15,6 +15,7 @@ struct global_info {
     FILE* userlog;
     FILE* messagelog;
     struct user* valid_user;
+    // struct group* groups;
     int seq_num;
 };
 

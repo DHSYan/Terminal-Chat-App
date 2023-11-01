@@ -30,9 +30,12 @@
 #include "interaction.h"
 #include "client_handler.h"
 #include <stdlib.h>
+#include "group.h"
 
 int main(int argc, char* argv[]) {
     struct user* valid_user = load_credentials(atoi(argv[2]));
+    struct group* groups = malloc(sizeof(struct group));
+
 
     printf("\n\nInitializing Server..\n\n");
         
@@ -70,6 +73,7 @@ int main(int argc, char* argv[]) {
     struct global_info* global_info = malloc(sizeof(struct global_info));
     global_info->seq_num = 0; 
     global_info->valid_user = valid_user;
+    // global_info->groups = groups;
 
     // create the loggin files
     FILE* userlog = init_logging("userlog.txt");

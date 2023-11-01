@@ -1,5 +1,6 @@
 #include "auth.h"
 #include "client_handler.h"
+#include "group.h"
 #include "logging.h"
 #include "messaging.h"
 #include "stdlib.h"
@@ -87,6 +88,16 @@ void print_active_user(struct thread_info* thread_info) {
     }
 }
 
+char* prompt_input(struct thread_info* thread_info) {
+    const char* message = "[server][input]|Enter group name: ";
+    send(thread_info->socket, message, strlen(message), 0); 
+    char* recv_buf = malloc(sizeof(char) * BUF);
+    recv(thread_info->socket, recv_buf, BUF, 0);
+
+    return recv_buf;
+}
+
+
 // return value:
 // 0 sucess!
 // -1 they dc-ed
@@ -127,6 +138,11 @@ int listen_command(struct thread_info* thread_info,
         return 0;
     } else if (strstr(buffer, "/activeuser") != NULL) {
         print_active_user(thread_info);
+        return 0;
+    } else if (strstr(buffer, "/creategroup") != NULL) {
+        // prompt_input(thread_info);
+        create_group(thread_info->global_info->valid_user, 
+                     buffer);
         return 0;
     } else {
         printf("What is this command? '%s'\n", buffer);

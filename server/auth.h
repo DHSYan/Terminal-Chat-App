@@ -13,7 +13,9 @@ struct user {
     int port; 
     int socket;
     char* last_log_on;
+    char* group;
     struct user* next;
+    struct user* next_user_in_group;
 };
 
 struct user* create_node(struct user* next);
