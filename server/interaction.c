@@ -140,9 +140,11 @@ int listen_command(struct thread_info* thread_info,
         print_active_user(thread_info);
         return 0;
     } else if (strstr(buffer, "/creategroup") != NULL) {
-        // prompt_input(thread_info);
-        create_group(thread_info->global_info->valid_user, 
-                     buffer);
+        remove_newline(buffer);
+        create_group(thread_info->global_info->valid_user, buffer);
+        return 0;
+    } else if (strstr(buffer, "/groupmsg") != NULL) {
+        // groupmessage(buffer, thread_info->global_info->valid_user);
         return 0;
     } else {
         printf("What is this command? '%s'\n", buffer);

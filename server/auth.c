@@ -14,7 +14,11 @@ struct user* create_node(struct user* next) {
     res->password = malloc(sizeof(char) * 1000);
     res->last_log_on = malloc(sizeof(char) *1000);
     res->addr =  malloc(sizeof(char) * 1000);
-    res->group = malloc(sizeof(char) * 1000);
+    res->group = malloc(sizeof(char*) * 1000);
+    for (int i = 0; i < 1000; i++) {
+        res->group[i] = malloc(sizeof(char) * 1000);
+    }
+    res->group = 0;
     res->next = next;
     res->isActive = false;
     res->socket = 0;
@@ -34,6 +38,7 @@ void print_user(struct user* user) {
     printf("    Attempt Left: %d\n", user->attempt);
     printf("    socket num: %d\n", user->socket);
     printf("    isActive: %d\n", user->isActive);
+    printf("    # of group: %d\n", user->num_group);
     printf("    next user addr: %p\n", user->next);
     printf("----------------end------------------\n\n");
 }

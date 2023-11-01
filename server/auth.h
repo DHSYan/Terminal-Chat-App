@@ -13,7 +13,8 @@ struct user {
     int port; 
     int socket;
     char* last_log_on;
-    char* group;
+    char** group;
+    int num_group; // the number of groups that a user is in
     struct user* next;
     struct user* next_user_in_group;
 };

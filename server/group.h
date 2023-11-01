@@ -25,5 +25,6 @@ int create_group(struct user* valid_user, char* arguments);
 void add_to_group(char* groupname, struct user* user);
 
 
+int groupmessage(char* arguments, struct user* valid_users);
 
 #endif
