@@ -33,6 +33,7 @@ void* client_handler(void* client_info) {
     //     is_client_alive = false;
     // } 
     else {
+        send(connect_socket, "[ACKSYN]|Welcome", SMALL_BUF, 0);
         is_client_alive = true;
         printf("\n\n--------------entering loop of listening to commands------------------\n");
     }

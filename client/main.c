@@ -31,16 +31,16 @@ struct server_message {
     int socket;
 };
 
-void* listening(void* socket) {
-    int* mySocket = (int*) socket;
-    char buffer[SMALL_BUF];
-    while(true) {
-        recv(*mySocket, buffer, SMALL_BUF, 0);
-        printf("thread: \n  %s\n", buffer);
-        memset(buffer, 0, sizeof(buffer));
-    }
-    return NULL;
-}
+// void* listening(void* socket) {
+//     int* mySocket = (int*) socket;
+//     char buffer[SMALL_BUF];
+//     while(true) {
+//         recv(*mySocket, buffer, SMALL_BUF, 0);
+//         printf("thread: \n  %s\n", buffer);
+//         memset(buffer, 0, sizeof(buffer));
+//     }
+//     return NULL;
+// }
 
 void* response(void* server_message) {
     struct server_message* message = (struct server_message*) server_message;
@@ -117,25 +117,35 @@ int main(int argc, char* argv[]) {
     
     int init_handshack = 
         send(handshake_socket, handshake, strlen(handshake)+1, 0);
+
+    printf("\n//////////////////Phase 3, wating for SYN ACK//////////////////\n");
+    int server_handshake_res = recv(handshake_socket, recv_buffer, 1000, 0);
+
+    int allow_to_run = false;
     
-
-
+    if (strstr(recv_buffer, "[ACKSYN]") != NULL) {
+        allow_to_run = true;
+        send(handshake_socket, "/login", SMALL_BUF, 0);
+    } else {
+        printf("No ACK from Server\n");
+        return -1;
+    }
 
     pthread_t response_thread;
 
-    while (true) {
+
+    printf("\n//////////////////Phase 4, Staring the loop//////////////////\n");
+    while (allow_to_run) {
         int server_res = 
             recv(handshake_socket, recv_buffer, 1000, 0);
-        if (strstr(recv_buffer, "[ACKSYN]") != NULL) {
-            struct server_message* message = malloc(sizeof(struct server_message));
-            strcpy(message->message, recv_buffer);
-            memset(recv_buffer, 0, SMALL_BUF);
 
-            message->socket = handshake_socket;
-            pthread_create(&response_thread, NULL, response, (void*) message);
-        } else {
-            printf("No ACK from Server\n");
-        }
+        struct server_message* message = malloc(sizeof(struct server_message));
+        strcpy(message->message, recv_buffer);
+        memset(recv_buffer, 0, SMALL_BUF);
+
+        message->socket = handshake_socket;
+
+        pthread_create(&response_thread, NULL, response, (void*) message);
     }
 
     return 0;
