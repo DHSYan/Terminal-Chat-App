@@ -44,6 +44,18 @@ struct message* create_message(char* string) {
     return res;
 }
 
+struct message* better_create_message(char* username, char* msg) {
+    struct message* res = malloc(sizeof(struct message));
+    strcpy(res->username, username);
+
+    char message[SMALL_BUF];
+    strcat(message, "[server][message]|");
+    strcat(message, msg);
+    strcpy(res->msg, message);
+
+    return res;
+}
+
 void send_message(struct message* message, struct user* valid_users) {
     struct user* receiver = return_user(message->username, valid_users);
     print_user(receiver);

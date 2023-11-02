@@ -1,4 +1,5 @@
 #include "auth.h"
+#include "messaging.h"
 #include "util.h"
 #include "stdlib.h"
 #include "group.h"
@@ -83,12 +84,16 @@ int create_group(struct user* valid_user, char* arguments) {
     if (isgroupexist(valid_user, groupname)) {
         return -1;
     } else {
-        parsed=strtok(NULL, " "); // get rid of "/creategroup"
-        strcpy(groupname, parsed); 
-        parsed=strtok(NULL, " "); // 
+        // parsed=strtok(NULL, " "); // get rid of "/creategroup"
+        // strcpy(groupname, parsed); 
+        // print_char_obo(groupname);
+        // parsed=strtok(NULL, " "); // 
+        // print_char_obo(parsed);
+        // printf("Cur parsed: %s\n", parsed);
     
        
-        while (parsed) {
+        while (parsed != NULL) {
+            print_char_obo(parsed);
             printf("Adding the user: %s\n", parsed);
             struct user* usertoadd = return_user(parsed, valid_user);
             if (usertoadd == NULL) {
@@ -96,48 +101,58 @@ int create_group(struct user* valid_user, char* arguments) {
             } else {
                 print_user(usertoadd);
                 add_to_group(groupname, usertoadd);
-                // strcpy(return_user(parsed, valid_user)->group, parsed);
                 parsed=strtok(NULL, " ");
+                printf("Cur parsed: %s\n", parsed);
             }
         }
     }
+
+    print_all_valided_user(valid_user);
     return 0;
 }
 
 
-void add_to_group(char* groupname, struct user* user) {
+void add_to_group(char* groupname, user* user) {
     // user->next_user_in_group = group->head_of_group;
     // group->head_of_group = user;
+    // print_char_obo(groupname);
+    // print_char_obo(user->group)
     strcpy(user->group[user->num_group], groupname);
     user->num_group++;
 
     // return group;
 }
 
-// int groupmessage(char* arguments, struct user* valid_users) {
-//     printf("Before parse: %s\n", arguments);
-//     char* parsed; 
-//     parsed = strtok(arguments, " ");
-//     parsed = strtok(NULL, " "); // getting rid of the /groupmsg
-//     printf("After 1 parse: %s\n", parsed);
-//
-//     char groupname[50];
-//
-//     strcpy(groupname, parsed);
-//     printf("The groupname is %s\n", groupname);
-//
-//     parsed = strtok(NULL, " "); // getting rid of the groupname
-//
-//     printf("After 2 parse: %s\n", parsed);
-//    
-//     for (struct user* cur = valid_users; cur; cur=cur->next) {
-//         for (int i = 0; i < cur->num_group; i++) {
-//             if (strcmp(cur->group[i], groupname) == 0) {
-//                 send(cur->socket, parsed, strlen(parsed), 0);
-//             }
-//         }
-//     }
-//     return 0; // nth special
-//     //log the messege
-//    
-// }
+int groupmessage(char* arguments, struct user* valid_users) {
+    printf("Before parse: %s\n", arguments);
+    char* parsed; 
+    parsed = strtok(arguments, " ");
+    parsed = strtok(NULL, " "); // getting rid of the /groupmsg
+    printf("After 1 parse: %s\n", parsed);
+
+    char groupname[50];
+
+    strcpy(groupname, parsed);
+    printf("The groupname is %s\n", groupname);
+
+    parsed = strtok(NULL, " "); // getting rid of the groupname
+
+    printf("After 2 parse: %s\n", parsed);
+   
+    for (user* cur = valid_users; cur; cur=cur->next) {
+        print_user(cur);
+        for (int i = 0; i < cur->num_group; i++) {
+            printf("Looking at cur->group: %s\n", cur->group[i]);
+            if (strcmp(cur->group[i], groupname) == 0) {
+                printf("Found! %s has the groupname!\n", cur->username);
+                send_message(better_create_message(cur->username, parsed),
+                             valid_users);
+                // send(cur->socket, parsed, strlen(parsed), 0);
+                
+            }
+        }
+    }
+    return 0; // nth special
+    //log the messege
+   
+}

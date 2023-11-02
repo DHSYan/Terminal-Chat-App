@@ -11,5 +11,6 @@ struct message {
 
 struct message* create_message(char* string);
 
+struct message* better_create_message(char* username, char* msg);
 void send_message(struct message* message, struct user* valid_users);
 #endif

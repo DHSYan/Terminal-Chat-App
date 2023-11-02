@@ -18,6 +18,7 @@ struct user {
     struct user* next;
     struct user* next_user_in_group;
 };
+typedef struct user user;
 
 struct user* create_node(struct user* next);
 

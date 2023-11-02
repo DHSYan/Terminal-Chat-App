@@ -18,21 +18,22 @@ struct user* create_node(struct user* next) {
     for (int i = 0; i < 1000; i++) {
         res->group[i] = malloc(sizeof(char) * 1000);
     }
-    res->group = 0;
+    res->num_group = 0;
     res->next = next;
     res->isActive = false;
     res->socket = 0;
     return res;
 }
-void print_all_valided_user(struct user* lst) {
-    for (struct user* cur = lst; cur != NULL; cur=cur->next) {
-        printf("%s ", cur->username);
-        printf("%s ", cur->password);
-        printf("%d\n", cur->socket);
+void print_all_valided_user(user* lst) {
+    for (user* cur = lst; cur != NULL; cur=cur->next) {
+        print_user(cur);
     }
 }
 
-void print_user(struct user* user) {
+void print_user(user* user) {
+    if (user == NULL) {
+        return;
+    }
     printf("\n\n-----------------User %s---------\n", user->username);
     printf("    password: %s\n", user->password);
     printf("    Attempt Left: %d\n", user->attempt);
@@ -40,7 +41,11 @@ void print_user(struct user* user) {
     printf("    isActive: %d\n", user->isActive);
     printf("    # of group: %d\n", user->num_group);
     printf("    next user addr: %p\n", user->next);
-    printf("----------------end------------------\n\n");
+    for (int i = 0; i < user->num_group; i++) {
+        printf("    Groups: ");
+        printf("%s ", user->group[i]);
+    }
+    printf("\n----------------end------------------\n\n");
 }
 
 // max_attempt need for preping all the user struct 

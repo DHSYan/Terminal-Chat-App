@@ -144,7 +144,7 @@ int listen_command(struct thread_info* thread_info,
         create_group(thread_info->global_info->valid_user, buffer);
         return 0;
     } else if (strstr(buffer, "/groupmsg") != NULL) {
-        // groupmessage(buffer, thread_info->global_info->valid_user);
+        groupmessage(buffer, thread_info->global_info->valid_user);
         return 0;
     } else {
         printf("What is this command? '%s'\n", buffer);
