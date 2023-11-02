@@ -29,6 +29,7 @@
 struct server_message {
     char message[1000];
     int socket;
+    int connection_status;
 };
 
 // void* listening(void* socket) {
@@ -59,6 +60,7 @@ void* response(void* server_message) {
     if (actual_message == NULL) {
         printf("Server sent an invalid message with invalid format\n");
         printf("\n\n\nServer sent: %s\n\n\n", actual_message);
+        return NULL;
     } else {
         printf("Server response:\n  %s ", actual_message);
     }
@@ -68,7 +70,8 @@ void* response(void* server_message) {
         send(message->socket, send_buffer, SMALL_BUF, 0);
     } else if (strstr(message->message, "[FIN]") != NULL) {
         printf("You have logout or server sent FIN\n");
-        close(message->socket);
+        // close(message->socket);
+        message->connection_status = false;
         return NULL;
     } else {
         printf("Ok");
@@ -122,9 +125,11 @@ int main(int argc, char* argv[]) {
     int server_handshake_res = recv(handshake_socket, recv_buffer, 1000, 0);
 
     int allow_to_run = false;
+
+    struct server_message* message = malloc(sizeof(struct server_message));
     
     if (strstr(recv_buffer, "[ACKSYN]") != NULL) {
-        allow_to_run = true;
+        message->connection_status = true;
         send(handshake_socket, "/login", SMALL_BUF, 0);
     } else {
         printf("No ACK from Server\n");
@@ -135,11 +140,8 @@ int main(int argc, char* argv[]) {
 
 
     printf("\n//////////////////Phase 4, Staring the loop//////////////////\n");
-    while (allow_to_run) {
-        int server_res = 
-            recv(handshake_socket, recv_buffer, 1000, 0);
+    while (recv(handshake_socket, recv_buffer, 1000, 0) > 0) {
 
-        struct server_message* message = malloc(sizeof(struct server_message));
         strcpy(message->message, recv_buffer);
         memset(recv_buffer, 0, SMALL_BUF);
 
