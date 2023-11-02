@@ -7,6 +7,7 @@
 #include <string.h>
 #include <time.h>
 #include <sys/socket.h>
+#include "stdlib.h"
 
 struct user* create_node(struct user* next) {
     struct user* res = malloc(sizeof(struct user));
@@ -299,5 +300,14 @@ int send_auth_prompt(int socket) {
     send(socket, password_prompt, strlen(password_prompt), 0);
 
     // Nothing Cur
+    return 0;
+}
+
+
+int logout(user* user) {
+    printf("closing user: %s connection\n", user->username);
+    send(user->socket, "[FIN]|BYE", SMALL_BUF, 0); 
+    close(user->socket);
+    user->isActive = false;
     return 0;
 }

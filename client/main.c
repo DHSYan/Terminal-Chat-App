@@ -20,6 +20,7 @@
 #include <netdb.h>
 #include <stdbool.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #include "interaction.h"
 
@@ -57,6 +58,7 @@ void* response(void* server_message) {
     char* actual_message = strchr(message->message, '|');
     if (actual_message == NULL) {
         printf("Server sent an invalid message with invalid format\n");
+        printf("\n\n\nServer sent: %s\n\n\n", actual_message);
     } else {
         printf("Server response:\n  %s ", actual_message);
     }
@@ -64,6 +66,10 @@ void* response(void* server_message) {
     if (strstr(message->message, "[input]") != NULL) {
         fgets(send_buffer, 99, stdin);
         send(message->socket, send_buffer, SMALL_BUF, 0);
+    } else if (strstr(message->message, "[FIN]") != NULL) {
+        printf("You have logout or server sent FIN\n");
+        close(message->socket);
+        return NULL;
     } else {
         printf("Ok");
         // send(message->socket, "OK", SMALL_BUF, 0);
@@ -86,6 +92,8 @@ int main(int argc, char* argv[]) {
 
     int get_addr_res = getaddrinfo(server_addr, server_port, &hints, &res);
     
+    printf("\n//////////////////Phase 1, creating the socket and connecting//////////////////\n");
+
     int handshake_socket =
         socket(res->ai_family,
                 res->ai_socktype,
@@ -98,44 +106,36 @@ int main(int argc, char* argv[]) {
     }
 
     /////////////////////////////////////////////////////////
+    printf("\n//////////////////Phase 2, sending handshake//////////////////\n");
     
     char* command = malloc(sizeof(char)*100);
     char* recv_buffer = malloc(sizeof(char)*100);
     char* handshake = malloc(sizeof(char)*100);
     char* send_buffer = malloc(sizeof(char)*100);
-    strcpy(handshake, "[client] Hello");
+    strcpy(handshake, "[client][SYN]|Hello");
 
     
     int init_handshack = 
         send(handshake_socket, handshake, strlen(handshake)+1, 0);
     
-    // pthread_t listening_thread;
-    //
-    // pthread_create(&listening_thread, NULL, listening, (void*) &handshake_socket);
+
+
 
     pthread_t response_thread;
 
     while (true) {
-        // printf("\n\n--------------------------We are listening....\n");
         int server_res = 
             recv(handshake_socket, recv_buffer, 1000, 0);
-        // printf("Server response: %s ", recv_buffer);
+        if (strstr(recv_buffer, "[ACKSYN]") != NULL) {
+            struct server_message* message = malloc(sizeof(struct server_message));
+            strcpy(message->message, recv_buffer);
+            memset(recv_buffer, 0, SMALL_BUF);
 
-        struct server_message* message = malloc(sizeof(struct server_message));
-        strcpy(message->message, recv_buffer);
-        memset(recv_buffer, 0, SMALL_BUF);
-
-        message->socket = handshake_socket;
-        pthread_create(&response_thread, NULL, response, (void*) message);
-        // fgets(send_buffer, 99, stdin);
-        // printf("we scanned %s\n", send_buffer);
-        // if (needcommand) {
-        //     send_command(handshake_socket, command);
-        //     needcommand=false;
-        // } else {
-        //     send(handshake_socket, send_buffer, 100, 0);
-        // }
-        // send(handshake_socket, send_buffer, 100, 0);
+            message->socket = handshake_socket;
+            pthread_create(&response_thread, NULL, response, (void*) message);
+        } else {
+            printf("No ACK from Server\n");
+        }
     }
 
     return 0;

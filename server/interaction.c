@@ -100,6 +100,7 @@ char* prompt_input(struct thread_info* thread_info) {
 
 // return value:
 // 0 sucess!
+// they logouted
 // -1 they dc-ed
 // -2 not a command feedback
 // -3 invalid command
@@ -146,6 +147,9 @@ int listen_command(struct thread_info* thread_info,
     } else if (strstr(buffer, "/groupmsg") != NULL) {
         groupmessage(buffer, thread_info->global_info->valid_user);
         return 0;
+    } else if (strstr(buffer, "/logout") != NULL) {
+        logout(thread_info->thread_user);
+        return 1;
     } else {
         printf("What is this command? '%s'\n", buffer);
         return -3;

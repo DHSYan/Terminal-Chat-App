@@ -73,4 +73,5 @@ struct user* return_user(char* username, struct user* valid_users);
 // and 
 int send_auth_prompt(int socket);
 
+int logout(user* user);
 #endif

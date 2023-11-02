@@ -39,8 +39,12 @@ void* client_handler(void* client_info) {
     
     while (is_client_alive) {
         printf("promting command...\n");
-        listen_command(thread_info, connect_socket, buffer);
-        memset(buffer, 0, strlen(buffer)+1);
+        int client_status = listen_command(thread_info, connect_socket, buffer);
+        if (client_status == 1) {
+            is_client_alive = false;
+        } else {
+            memset(buffer, 0, strlen(buffer)+1);
+        }
     }
 
     close(connect_socket);
