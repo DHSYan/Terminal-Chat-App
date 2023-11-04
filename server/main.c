@@ -71,7 +71,6 @@ int main(int argc, char* argv[]) {
     struct global_info* global_info = malloc(sizeof(struct global_info));
     global_info->seq_num = 0; 
     global_info->valid_user = valid_user;
-    // global_info->groups = groups;
 
     // create the loggin files
     FILE* userlog = init_logging("userlog.txt");
@@ -88,9 +87,6 @@ int main(int argc, char* argv[]) {
         if (connect_socket < 0) {
             perror("Something went wrong the accepting");
         }
-
-        // global_info->seq_num++; // Increase on each connection
-        // printf("New client, this client seq_num: %d\n", global_info->seq_num);
 
         struct thread_info* thread_info = malloc(sizeof(struct thread_info));
 

@@ -123,7 +123,8 @@ int main(int argc, char* argv[]) {
         send(handshake_socket, handshake, strlen(handshake)+1, 0);
 
     // printf("\n//////////////////Phase 3, wating for SYN ACK//////////////////\n");
-    int server_handshake_res = recv(handshake_socket, recv_buffer, 1000, 0);
+    memset(recv_buffer, 0, SMALL_BUF);
+    int server_handshake_res = recv(handshake_socket, recv_buffer, 100, 0);
 
     int allow_to_run = false;
 
@@ -131,6 +132,8 @@ int main(int argc, char* argv[]) {
     
     if (strstr(recv_buffer, "[ACKSYN]") != NULL) {
         message->connection_status = true;
+        memset(recv_buffer, 0, SMALL_BUF);
+        recv(handshake_socket, recv_buffer, 100, 0); // wait for server to send the comm
         send(handshake_socket, "/login", SMALL_BUF, 0);
     } else {
         printf("No ACK from Server\n");
