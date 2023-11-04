@@ -25,8 +25,8 @@ void* client_handler(void* client_info) {
     printf("we got the init msg: %s\n", buffer);
 
     if (recv_res == -1) {
-        puts("something is wrong with recv in server");
-        exit(0);
+        printf("No init msg\n");
+        // exit(0);
     } 
     // else if (recv_res == 0) {
     //     puts("they disconnected");
@@ -48,6 +48,6 @@ void* client_handler(void* client_info) {
         }
     }
 
-    close(connect_socket);
+    // close(connect_socket);
     return NULL;
 }
