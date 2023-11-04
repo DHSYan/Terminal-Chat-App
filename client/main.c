@@ -62,7 +62,8 @@ void* response(void* server_message) {
         printf("\n\n\nServer sent: %s\n\n\n", actual_message);
         return NULL;
     } else {
-        printf("Server response:\n  %s ", actual_message);
+        // printf("Server response:\n  %s ", actual_message);
+        printf("%s", actual_message);
     }
 
     if (strstr(message->message, "[input]") != NULL) {
@@ -74,7 +75,7 @@ void* response(void* server_message) {
         message->connection_status = false;
         return NULL;
     } else {
-        printf("Ok");
+        // printf("Ok");
         // send(message->socket, "OK", SMALL_BUF, 0);
     }
 
@@ -95,7 +96,7 @@ int main(int argc, char* argv[]) {
 
     int get_addr_res = getaddrinfo(server_addr, server_port, &hints, &res);
     
-    printf("\n//////////////////Phase 1, creating the socket and connecting//////////////////\n");
+    // printf("\n//////////////////Phase 1, creating the socket and connecting//////////////////\n");
 
     int handshake_socket =
         socket(res->ai_family,
@@ -109,7 +110,7 @@ int main(int argc, char* argv[]) {
     }
 
     /////////////////////////////////////////////////////////
-    printf("\n//////////////////Phase 2, sending handshake//////////////////\n");
+    // printf("\n//////////////////Phase 2, sending handshake//////////////////\n");
     
     char* command = malloc(sizeof(char)*100);
     char* recv_buffer = malloc(sizeof(char)*100);
@@ -121,7 +122,7 @@ int main(int argc, char* argv[]) {
     int init_handshack = 
         send(handshake_socket, handshake, strlen(handshake)+1, 0);
 
-    printf("\n//////////////////Phase 3, wating for SYN ACK//////////////////\n");
+    // printf("\n//////////////////Phase 3, wating for SYN ACK//////////////////\n");
     int server_handshake_res = recv(handshake_socket, recv_buffer, 1000, 0);
 
     int allow_to_run = false;
@@ -139,7 +140,7 @@ int main(int argc, char* argv[]) {
     pthread_t response_thread;
 
 
-    printf("\n//////////////////Phase 4, Staring the loop//////////////////\n");
+    // printf("\n//////////////////Phase 4, Staring the loop//////////////////\n");
     while (recv(handshake_socket, recv_buffer, 1000, 0) > 0) {
 
         strcpy(message->message, recv_buffer);

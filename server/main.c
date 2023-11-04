@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
         }
 
         // global_info->seq_num++; // Increase on each connection
-        printf("New client, this client seq_num: %d\n", global_info->seq_num);
+        // printf("New client, this client seq_num: %d\n", global_info->seq_num);
 
         struct thread_info* thread_info = malloc(sizeof(struct thread_info));
 

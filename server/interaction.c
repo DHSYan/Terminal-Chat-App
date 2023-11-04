@@ -41,7 +41,7 @@ void send_login(struct thread_info* thread_info) {
             login_password(valid_user, username, password);
 
         if (login_password_res == 0) {
-            send(socket, "[server][message]|Welcome!", SMALL_BUF, 0);
+            send(socket, "[server][message]|Welcome to 3331 Chat App!\n", SMALL_BUF, 0);
             log_login(thread_info, username);
             struct user* user = 
                 return_user(username, valid_user);
