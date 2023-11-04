@@ -4,11 +4,6 @@
 #include "auth.h"
 #include "util.h"
 // #include "auth.h"
-struct group {
-    char name[50];
-    struct user* head_of_group;
-    struct group* next_group;
-};
 
 bool isgroupexist(struct user* valid_user, char* groupname);
 

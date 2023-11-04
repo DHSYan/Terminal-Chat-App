@@ -34,8 +34,6 @@
 
 int main(int argc, char* argv[]) {
     struct user* valid_user = load_credentials(atoi(argv[2]));
-    struct group* groups = malloc(sizeof(struct group));
-
 
     printf("\n\nInitializing Server..\n\n");
         
