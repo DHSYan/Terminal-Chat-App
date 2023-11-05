@@ -142,6 +142,7 @@ int login_username(struct user *valid_users, char* username) {
     // }
 }
 
+// Assuming that the user has attempts
 // Return values
 // 0: correct password
 // -2: incorrect and blocked
@@ -150,22 +151,23 @@ int login_username(struct user *valid_users, char* username) {
 int login_password(struct user* valid_user, char* username, char* password) {
     struct user* user = return_user(username, valid_user);
     printf("the user has: %d attempts\n", user->attempt);
-    while(user->attempt > 0) {
+    // while(user->attempt > 0) {
 
-        int is_correct_passwd = is_password_correct(password, user);
-        if (is_correct_passwd == true) {
-            printf("[local][log] correct passwd\n");
-            return 0;
-        } else if (is_correct_passwd == false && user->attempt == 1) {
-            printf("[local][log] incorrect password entered, and no more attempt, blocking\n");
-            block(user);
-            return -2;
-        } else {
-            printf("[local][log] incorrect password entered\n");
-            user->attempt--;
-            return -1;
-        }
+    int is_correct_passwd = is_password_correct(password, user);
+    if (is_correct_passwd == true) {
+        printf("[local][log] correct passwd\n");
+        return 0;
+    } else if (is_correct_passwd == false && user->attempt == 1) {
+        printf("[local][log] incorrect password entered, and no more attempt, blocking\n");
+        block(user);
+        user->attempt = 0;
+        return -2;
+    } else {
+        printf("[local][log] incorrect password entered\n");
+        user->attempt--;
+        return -1;
     }
+    // }
     return 3;
 }
 

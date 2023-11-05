@@ -12,7 +12,10 @@
 #define SMALL_BUF 100
 #define BUF 1024
 
-void send_login(struct thread_info* thread_info) {
+// Return Value
+// -1 means wrong password entered
+// -2 Means that a non-registered user was entered
+int send_login(struct thread_info* thread_info) {
     struct user* valid_user = thread_info->global_info->valid_user;
     int socket = thread_info->socket;
 
@@ -31,43 +34,49 @@ void send_login(struct thread_info* thread_info) {
 
     int login_username_res = login_username(valid_user, username);
     if (login_username_res == 0) {
-        send(socket, "[server][input]|Enter passward: ", SMALL_BUF, 0);
 
-        char* password = malloc(sizeof(char)*BUF);
-        recv(socket, password, BUF, 0);
-        remove_trailing_space(password);
+        int login_password_res = 0;
 
-        int login_password_res = 
-            login_password(valid_user, username, password);
+        while (login_password_res != -2) {
+            send(socket, "[server][input]|Enter passward: ", SMALL_BUF, 0);
 
-        if (login_password_res == 0) {
-            send(socket, "[server][message]|Welcome to 3331 Chat App!\n", SMALL_BUF, 0);
-            log_login(thread_info, username);
-            struct user* user = 
-                return_user(username, valid_user);
-            thread_info->thread_user = user;
-            if (user == NULL) {
-                printf("No user with %s found\n", username);
+            char* password = malloc(sizeof(char)*BUF);
+            recv(socket, password, BUF, 0);
+            remove_trailing_space(password);
+            login_password_res = login_password(valid_user, username, password);
+            if (login_password_res == 0) {
+                send(socket, "[server][message]|Welcome to 3331 Chat App!\n", SMALL_BUF, 0);
+                log_login(thread_info, username);
+                struct user* user = 
+                    return_user(username, valid_user);
+                thread_info->thread_user = user;
+                if (user == NULL) {
+                    printf("No user with %s found\n", username);
+                }
+                user->isActive = true;
+                user->socket = socket;
+                time_t timer = time(NULL);
+                strcpy(user->addr, thread_info->addr);
+                user->port = thread_info->port;
+
+                strcpy(user->last_log_on, asctime(localtime(&timer)));
+
+                thread_info->global_info->seq_num++;
+                return 0;
+            } else {
+                send(socket, "[server][message]|bruh wrong password!", SMALL_BUF, 0);
+                // return -1;
             }
-            user->isActive = true;
-            user->socket = socket;
-            time_t timer = time(NULL);
-            strcpy(user->addr, thread_info->addr);
-            user->port = thread_info->port;
-            
-            strcpy(user->last_log_on, asctime(localtime(&timer)));
-
-            thread_info->global_info->seq_num++;
-        } else {
-            send(socket, "[server][message]|bruh wrong password!", SMALL_BUF, 0);
         }
-
     } else if (login_username_res == -2) {
         send(socket, "[server][message]|You are not registered\n", SMALL_BUF, 0);
+        return -2;
     } else if (login_username_res == -3) {
         send(socket, "[server][message]|You are still blocked wait\n", SMALL_BUF, 0);
+        return -3;
     }
-    printf("finshed with sending_logging\n");
+    // printf("finshed with sending_logging\n");
+    return 0;
 }
 
 void print_active_user(struct thread_info* thread_info) {
