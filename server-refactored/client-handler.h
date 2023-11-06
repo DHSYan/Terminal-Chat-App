@@ -16,7 +16,7 @@ typedef struct global_info {
 // This will contain all the inforamiot that is specific to the client
 // since each client is it own thread.
 typedef struct thread_info {
-    global_info* global_info;
+    struct global_info* global_info;
     int socket;
     char* addr;
     int port;

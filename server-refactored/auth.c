@@ -83,14 +83,40 @@ char* password_prompt(int socket) {
     return buffer;
 }
 
-int password_phase(user* attempt_user, char* buffer, int socket ) {
-    while (attempt_user->attempt > 0) {
-        memset(buffer, 0, SMALL_BUF);
-        buffer = password_prompt(socket);
-        if (strcmp(buffer, attempt_user->password) == 0) {
-            return 0; // Sucess
-        } else {
-            attempt_user->attempt--;
+int password_phase(user* attempt_user, int socket) {
+    time_t seconds;
+    time(&seconds);
+
+    if (seconds - attempt_user->blocked_time < 10) { //still blocked
+        send(socket, 
+                "[info]|You are still blocked, please wait\n",
+                SMALL_BUF,
+                0);
+        return -1;
+    } else { // attempt > 0
+        while (true) {
+            char* buffer = password_prompt(socket);
+            remove_trail_whitespace(buffer);
+
+            if (strcmp(buffer, attempt_user->password) == 0) { // correct
+                send(socket,
+                        "[info]|Welcome to 3331 Chat App\n",
+                        SMALL_BUF,
+                        0);
+                return 0; // Sucess
+            } else {
+                attempt_user->attempt--;
+                if (attempt_user->attempt == 0) {
+                    attempt_user->attempt = 1;
+                    time(&seconds);
+                    attempt_user->blocked_time = seconds;
+                    send(socket,
+                            "[info]|You are blocked, please try again later",
+                            SMALL_BUF,
+                            0);
+                    return -1;
+                }
+            }
         }
     }
     return -1;
@@ -105,48 +131,29 @@ int login(thread_info* thread_info) {
 
     // Username Prompt Input 
     user* attempt_user = NULL;
-    
+
     while (attempt_user == NULL) {
         send(socket, "[input]|Enter Username: ", SMALL_BUF, 0);
         recv(socket,  recv_buffer, SMALL_BUF, 0);
         remove_trail_whitespace(recv_buffer);
-        user* attempt_user = return_user(recv_buffer, valid_users);
+        attempt_user = return_user(recv_buffer, valid_users);
         if (attempt_user == NULL) {
             send(socket,
                  "[info]|Entered Username is not registered\n",
                  SMALL_BUF,
                  0);
 
-        }
+        }    
     }
 
     // Password Prompt
-    password_phase(attempt_user, recv_buffer, thread_info->socket);
+    // print_user(attempt_user);
+    return password_phase(attempt_user, socket);
 
     // Blocckeing
-    if (attempt_user->attempt == 0) {
-        // check if 10 sec passed and they are unblocked
-        time_t seconds;
-        time(&seconds);
-        
-        if (attempt_user->blocked_time == 0) {
-            attempt_user->blocked_time = seconds;
-            return -1;
-        } if (seconds - attempt_user->blocked_time > 10) {
-            attempt_user->attempt = 1;
-            password_phase(attempt_user, recv_buffer, thread_info->socket);
-        } else {
-            // Still blocked
-            send(thread_info->socket, 
-                 "[info]|You are still blocked, please wait\n",
-                 SMALL_BUF,
-                 0);
-            return -1; // Return to client_hasder, -1 indicate dc client
-        }
- 
-    }
+    // bool pass = false;
 
-    return 0; // Success, return to client_handler
+    // return 0; // Success, return to client_handler
               // 0 means they can process to the next stage.
 }
 
@@ -160,6 +167,7 @@ void print_all_valided_user(user* lst) {
 
 void print_user(user* user) {
     if (user == NULL) {
+        printf("LOL");
         return;
     }
     printf("-----------------User %s---------\n", user->username);

@@ -19,8 +19,6 @@ int main(int argc, char* argv[]) {
     }
     
     user* valid_users = load_credentials(max_attempt);
-    print_all_valided_user(valid_users);
-
 
     printf("\n\nInitializing Server..\n\n");
     const char* port = argv[1];
