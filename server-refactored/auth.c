@@ -1,0 +1,178 @@
+#include "lib.h"
+#include "auth.h"
+#include "const.h"
+#include "string-util.h"
+#include <stdlib.h>
+#include <string.h>
+
+user* create_node(user* next) {
+    user* res = malloc(sizeof(struct user));
+    res->username = malloc(sizeof(char) * 1000);
+    res->password = malloc(sizeof(char) * 1000);
+    res->last_log_on = malloc(sizeof(char) *1000);
+    res->addr =  malloc(sizeof(char) * 1000);
+    res->group = malloc(sizeof(char*) * 1000);
+    for (int i = 0; i < 1000; i++) {
+        res->group[i] = malloc(sizeof(char) * 1000);
+    }
+    res->num_group = 0;
+    res->next = next;
+    res->isActive = false;
+    res->socket = 0;
+    res->blocked_time = 0;
+    return res;
+}
+
+// max_attempt need for preping all the user struct 
+// This functions returns a pointer to struct user, that is a 
+// linkedlist, and it preps it with the inforamiot needed
+user* load_credentials(int max_attempt) {
+    // reading a file: https://www.youtube.com/watch?v=fLPqn026DaE
+    // struct user* valid_users = malloc(sizeof(struct user));
+    struct user* valid_users = create_node(NULL);
+
+    FILE* creds;
+    creds = fopen("credentials.txt", "r");
+    if (creds == NULL) {
+        printf("problem with opening credentials.txt\n");
+    } else {
+        char c;
+        int j = 0;
+        int is_user_name_done = false;
+        struct user* cur = valid_users;
+        while ( (c = fgetc(creds)) != EOF ) {
+            if( c == ' ' ) {
+                is_user_name_done = true;
+                j = 0;
+            } else if ( c == '\n' ) {
+                // if c == '\n' that means that we have finished
+                // scanning this user, now we fill this user's struct
+                // with inforamiot that is needed
+                cur->next = create_node(NULL);
+                cur->attempt = max_attempt;
+                cur=cur->next;
+                is_user_name_done = false;
+                j = 0;
+            } else if (!is_user_name_done) {
+                cur->username[j] = c;   
+                j++;
+            } else {
+                cur->password[j] = c;
+                j++;
+            } 
+        }
+    }
+   return valid_users;
+}
+
+user* return_user(char *username, struct user* valid_users) { 
+    struct user* res;
+    for (struct user* cur = valid_users; cur != NULL; cur=cur->next) {
+        if(strcmp(cur->username, username) == 0) {
+            res = cur;
+            return res;
+        } 
+    }
+    return NULL;
+}
+
+char* password_prompt(int socket) {
+    char* buffer = malloc(sizeof(char) * SMALL_BUF);
+    send(socket, "[input]|Enter Password: ", SMALL_BUF, 0);
+    recv(socket, buffer, SMALL_BUF, 0);
+    return buffer;
+}
+
+int password_phase(user* attempt_user, char* buffer, int socket ) {
+    while (attempt_user->attempt > 0) {
+        memset(buffer, 0, SMALL_BUF);
+        buffer = password_prompt(socket);
+        if (strcmp(buffer, attempt_user->password) == 0) {
+            return 0; // Sucess
+        } else {
+            attempt_user->attempt--;
+        }
+    }
+    return -1;
+}
+
+int login(thread_info* thread_info) {
+    int socket = thread_info->socket;
+    user* valid_users = thread_info->global_info->valid_users;
+
+    char* recv_buffer = malloc(sizeof(char) * SMALL_BUF);
+    memset(recv_buffer, 0, SMALL_BUF);
+
+    // Username Prompt Input 
+    user* attempt_user = NULL;
+    
+    while (attempt_user == NULL) {
+        send(socket, "[input]|Enter Username: ", SMALL_BUF, 0);
+        recv(socket,  recv_buffer, SMALL_BUF, 0);
+        remove_trail_whitespace(recv_buffer);
+        user* attempt_user = return_user(recv_buffer, valid_users);
+        if (attempt_user == NULL) {
+            send(socket,
+                 "[info]|Entered Username is not registered\n",
+                 SMALL_BUF,
+                 0);
+
+        }
+    }
+
+    // Password Prompt
+    password_phase(attempt_user, recv_buffer, thread_info->socket);
+
+    // Blocckeing
+    if (attempt_user->attempt == 0) {
+        // check if 10 sec passed and they are unblocked
+        time_t seconds;
+        time(&seconds);
+        
+        if (attempt_user->blocked_time == 0) {
+            attempt_user->blocked_time = seconds;
+            return -1;
+        } if (seconds - attempt_user->blocked_time > 10) {
+            attempt_user->attempt = 1;
+            password_phase(attempt_user, recv_buffer, thread_info->socket);
+        } else {
+            // Still blocked
+            send(thread_info->socket, 
+                 "[info]|You are still blocked, please wait\n",
+                 SMALL_BUF,
+                 0);
+            return -1; // Return to client_hasder, -1 indicate dc client
+        }
+ 
+    }
+
+    return 0; // Success, return to client_handler
+              // 0 means they can process to the next stage.
+}
+
+
+/////////////////////////////UTILZITY FUNCTIONS/////////////////////////////////
+void print_all_valided_user(user* lst) {
+    for (user* cur = lst; cur != NULL; cur=cur->next) {
+        print_user(cur);
+    }
+}
+
+void print_user(user* user) {
+    if (user == NULL) {
+        return;
+    }
+    printf("-----------------User %s---------\n", user->username);
+    printf("    password: %s\n", user->password);
+    printf("    Attempt Left: %d\n", user->attempt);
+    printf("    socket num: %d\n", user->socket);
+    printf("    isActive: %d\n", user->isActive);
+    for (int i = 0; i < user->num_group; i++) {
+        printf("    Groups: ");
+        printf("%s ", user->group[i]);
+    }
+    printf("    # of group: %d\n", user->num_group);
+    printf("----------------end------------------\n");
+}
+
+

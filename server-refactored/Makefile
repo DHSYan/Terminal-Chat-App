@@ -7,13 +7,13 @@ CC = gcc
 
 LIB = lib.h const.h
 
-FILES = main.c client-handler.o protocol-processor.o string-util.o
+FILES = main.c client-handler.o protocol-processor.o string-util.o auth.o
 
 ${EXEC}: ${FILES} ${LIB}
 	${CC} ${FILES} -o ${EXEC}
 
-# auth.o: auth.c auth.h ${LIB}
-# 	${CC} -c auth.c
+auth.o: auth.c auth.h ${LIB}
+	${CC} -c auth.c
 #
 # comm.o: comm.c comm.h ${LIB}
 # 	${CC} -c comm.c

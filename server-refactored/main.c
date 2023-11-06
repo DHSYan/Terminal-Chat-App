@@ -1,7 +1,8 @@
 #include "lib.h"
 
-// #include "auth.h"
+#include "auth.h"
 #include "client-handler.h"
+#include <stdlib.h>
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
@@ -9,6 +10,17 @@ int main(int argc, char* argv[]) {
                 "./server sever_port number_of_consecutive_failed_attempts\n");
         return -1;
     }
+    int max_attempt = atoi(argv[2]);
+    if (max_attempt < 1 || max_attempt > 5) {
+        printf("Invalid number of allowed failed consecutive attempt: number. "
+                "The valid value of argument number is "
+                "an integer between 1 and 5\n");
+        return -1;
+    }
+    
+    user* valid_users = load_credentials(max_attempt);
+    print_all_valided_user(valid_users);
+
 
     printf("\n\nInitializing Server..\n\n");
     const char* port = argv[1];
@@ -43,6 +55,10 @@ int main(int argc, char* argv[]) {
 
     pthread_t client_thread;
 
+    global_info* global_info = malloc(sizeof(struct global_info));
+    global_info->active_user_seq_num = 0;
+    global_info->valid_users = valid_users;
+
     while(true) {
         struct sockaddr_storage client_addr;
         socklen_t client_addr_size;
@@ -55,6 +71,7 @@ int main(int argc, char* argv[]) {
 
         thread_info* thread_info = malloc(sizeof(struct thread_info));
         thread_info->socket = connect_socket;
+        thread_info->global_info = global_info;
 
         /* Reference:
             // The casting information was taken from Beej's Guide in 

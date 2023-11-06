@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
 
     struct server_message* message = malloc(sizeof(struct server_message));
     
-    if (strstr(recv_buffer, "[ACKSYN]") != NULL) {
+    if (strstr(recv_buffer, "[SYNACK]") != NULL) {
         message->connection_status = true;
         memset(recv_buffer, 0, SMALL_BUF);
         send(handshake_socket, "[ACK]\n", SMALL_BUF, 0);

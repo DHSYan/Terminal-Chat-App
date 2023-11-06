@@ -19,10 +19,10 @@ void* client_handler(void* client_info) {
         perror("Something is wrong with listening to the handshake");
     }
 
-    int client_connected = false;
+    int client_connected = -1;
 
     if (strstr(buffer, "SYN") != NULL) {
-        int send_res = send(connect_socket, "[ACKSYN]|Welcome\n", SMALL_BUF, 0);
+        int send_res = send(connect_socket, "[SYNACK]|Welcome\n", SMALL_BUF, 0);
         if (send_res < 0 ) {
             perror("something's wrong with sending");
         }
@@ -31,7 +31,7 @@ void* client_handler(void* client_info) {
         memset(buffer, 0, SMALL_BUF);
         recv(connect_socket, buffer, SMALL_BUF, 0);
         if (strstr(buffer, "ACK") != NULL) {
-            client_connected = true;
+            client_connected = 0;
         } else {
             perror("client didn't send ACK");
         }
@@ -39,15 +39,20 @@ void* client_handler(void* client_info) {
         perror("client didin't send SYN");
     }
 
-    while (client_connected) {
+    while (client_connected == 0) {
         // listen for message 
         // pass the message to the protocol processer
         memset(buffer, 0, SMALL_BUF);
-        send(connect_socket, "|Enter Command: ", SMALL_BUF, 0);
+        send(connect_socket, "[input]|Enter Command: ", SMALL_BUF, 0);
         recv(connect_socket, buffer, SMALL_BUF, 0);
 
         client_connected = system_caller(buffer);
+        if (client_connected == -1) {
+            send(connect_socket, "[FIN]|Disconnected\n", SMALL_BUF, 0);
+        }
     }
+
+    close(connect_socket);
 
     return NULL;
 }

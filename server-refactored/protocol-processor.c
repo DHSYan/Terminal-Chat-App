@@ -5,15 +5,16 @@
 
 // msg should be a heap allocated string
 // returns false when the client dc-ed
-bool system_caller(char *msg) {
+int system_caller(char *msg) {
     // Prep the message
     remove_trail_whitespace(msg);
 
     if(strcmp(msg, "/login") == 0) {
         printf("login detected\n");
+        //login();
     } else {
         printf("This is not a recognized command: %s", msg);
     }
 
-    return true;
+    return 0;
 }
