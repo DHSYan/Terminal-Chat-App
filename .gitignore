@@ -5,4 +5,5 @@ notes
 *.o
 server/server
 client/client
+server-refactored/server-refactored
 *.txt

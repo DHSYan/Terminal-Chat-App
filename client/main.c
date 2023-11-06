@@ -32,30 +32,9 @@ struct server_message {
     int connection_status;
 };
 
-// void* listening(void* socket) {
-//     int* mySocket = (int*) socket;
-//     char buffer[SMALL_BUF];
-//     while(true) {
-//         recv(*mySocket, buffer, SMALL_BUF, 0);
-//         printf("thread: \n  %s\n", buffer);
-//         memset(buffer, 0, sizeof(buffer));
-//     }
-//     return NULL;
-// }
-
 void* response(void* server_message) {
     struct server_message* message = (struct server_message*) server_message;
-    // char* mymessage = message->message;
     char* send_buffer = malloc(sizeof(char) * SMALL_BUF);
-    // if (strstr(message->message, "command") != NULL) {
-    //     printf("Enter command: ");
-    //     fgets(send_buffer, 99, stdin);
-    //     send(message->socket, send_buffer, SMALL_BUF, 0);
-    // } else {
-    //     printf("Server response:\n  %s ", message->message);
-    //     fgets(send_buffer, 99, stdin);
-    //     send(message->socket, send_buffer, SMALL_BUF, 0);
-    // }
     char* actual_message = strchr(message->message, '|');
     if (actual_message == NULL) {
         printf("Server sent an invalid message with invalid format\n");
@@ -71,12 +50,8 @@ void* response(void* server_message) {
         send(message->socket, send_buffer, SMALL_BUF, 0);
     } else if (strstr(message->message, "[FIN]") != NULL) {
         printf("You have logout or server sent FIN\n");
-        // close(message->socket);
         message->connection_status = false;
         return NULL;
-    } else {
-        // printf("Ok");
-        // send(message->socket, "OK", SMALL_BUF, 0);
     }
 
     return NULL;
@@ -116,7 +91,7 @@ int main(int argc, char* argv[]) {
     char* recv_buffer = malloc(sizeof(char)*100);
     char* handshake = malloc(sizeof(char)*100);
     char* send_buffer = malloc(sizeof(char)*100);
-    strcpy(handshake, "[client][SYN]|Hello");
+    strcpy(handshake, "[client][SYN]|Hello\n");
 
     
     int init_handshack = 
@@ -134,7 +109,7 @@ int main(int argc, char* argv[]) {
         message->connection_status = true;
         memset(recv_buffer, 0, SMALL_BUF);
         recv(handshake_socket, recv_buffer, 100, 0); // wait for server to send the comm
-        send(handshake_socket, "/login", SMALL_BUF, 0);
+        send(handshake_socket, "/login\n", SMALL_BUF, 0);
     } else {
         printf("No ACK from Server\n");
         return -1;

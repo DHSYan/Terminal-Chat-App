@@ -8,7 +8,6 @@ struct thread_info {
     char* addr;
     int port;
     struct user* thread_user;
-
 };
 
 struct global_info {
