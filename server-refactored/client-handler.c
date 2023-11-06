@@ -1,7 +1,7 @@
 #include "lib.h"
 #include "const.h"
 #include "client-handler.h"
-#include <stdio.h>
+#include "protocol-processor.h"
 
 void* client_handler(void* client_info) {
     struct thread_info* thread_info = 
@@ -46,6 +46,7 @@ void* client_handler(void* client_info) {
         send(connect_socket, "|Enter Command: ", SMALL_BUF, 0);
         recv(connect_socket, buffer, SMALL_BUF, 0);
 
+        client_connected = system_caller(buffer);
     }
 
     return NULL;
