@@ -108,7 +108,8 @@ int main(int argc, char* argv[]) {
     if (strstr(recv_buffer, "[ACKSYN]") != NULL) {
         message->connection_status = true;
         memset(recv_buffer, 0, SMALL_BUF);
-        recv(handshake_socket, recv_buffer, 100, 0); // wait for server to send the comm
+        send(handshake_socket, "[ACK]\n", SMALL_BUF, 0);
+        recv(handshake_socket, recv_buffer, SMALL_BUF, 0); // wait for server to send the comm
         send(handshake_socket, "/login\n", SMALL_BUF, 0);
     } else {
         printf("No ACK from Server\n");
