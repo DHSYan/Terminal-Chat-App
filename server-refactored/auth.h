@@ -28,7 +28,7 @@ user* return_user(char *username, struct user* valid_users);
 
 char* password_prompt(int socket);
 
-int password_phase(user* attempt_user, int socket);
+int password_phase(user* attempt_user, int socket, thread_info* thread_info);
 
 int login(thread_info* thread_info);
 

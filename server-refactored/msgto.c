@@ -9,6 +9,9 @@ struct message* create_message(char* string) {
     struct message* res = malloc(sizeof(struct message));
     char username[SMALL_BUF];
     char message[SMALL_BUF];
+    memset(message, 0, SMALL_BUF);
+    memset(username, 0, SMALL_BUF);
+
     strcat(message, "[server][message]|");
 
     int j = 0;

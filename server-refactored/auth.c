@@ -83,7 +83,7 @@ char* password_prompt(int socket) {
     return buffer;
 }
 
-int password_phase(user* attempt_user, int socket) {
+int password_phase(user* attempt_user, int socket, thread_info* thread_info) {
     time_t seconds;
     time(&seconds);
 
@@ -103,6 +103,19 @@ int password_phase(user* attempt_user, int socket) {
                         "[info]|Welcome to 3331 Chat App\n",
                         SMALL_BUF,
                         0);
+
+                attempt_user->isActive = true;
+                strcpy(attempt_user->addr, thread_info->addr);
+                attempt_user->port = thread_info->port;
+
+                time_t timer = time(NULL);
+                strcpy(attempt_user->last_log_on, asctime(localtime(&timer)));
+
+                attempt_user->socket = socket;
+
+                thread_info->global_info->active_user_seq_num++;
+                thread_info->thread_user = attempt_user;
+
                 return 0; // Sucess
             } else {
                 attempt_user->attempt--;
@@ -145,9 +158,7 @@ int login(thread_info* thread_info) {
         }    
     }
 
-    attempt_user->socket = socket;
-    thread_info->thread_user = attempt_user;
-    return password_phase(attempt_user, socket);
+    return password_phase(attempt_user, socket, thread_info);
 }
 
 

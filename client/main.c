@@ -24,7 +24,7 @@
 
 #include "interaction.h"
 
-#define SMALL_BUF 100
+#define SMALL_BUF 1024
 
 struct global_info {
     bool status; 
@@ -32,7 +32,7 @@ struct global_info {
 typedef struct global_info global_info;
 
 struct server_message {
-    char message[1024];
+    char message[SMALL_BUF];
     int socket;
     global_info* global_info;
 };
@@ -142,10 +142,10 @@ int main(int argc, char* argv[]) {
     /////////////////////////////////////////////////////////
     // printf("\n//////////////////Phase 2, sending handshake//////////////////\n");
     
-    char* command = malloc(sizeof(char)*100);
-    char* recv_buffer = malloc(sizeof(char)*100);
-    char* handshake = malloc(sizeof(char)*100);
-    char* send_buffer = malloc(sizeof(char)*100);
+    char* command = malloc(sizeof(char)*SMALL_BUF);
+    char* recv_buffer = malloc(sizeof(char)*SMALL_BUF);
+    char* handshake = malloc(sizeof(char)*SMALL_BUF);
+    char* send_buffer = malloc(sizeof(char)*SMALL_BUF);
     strcpy(handshake, "[client][SYN]|Hello\n");
 
     
@@ -154,7 +154,7 @@ int main(int argc, char* argv[]) {
 
     // printf("\n//////////////////Phase 3, wating for SYN ACK//////////////////\n");
     memset(recv_buffer, 0, SMALL_BUF);
-    int server_handshake_res = recv(handshake_socket, recv_buffer, 100, 0);
+    int server_handshake_res = recv(handshake_socket, recv_buffer, SMALL_BUF, 0);
 
     int allow_to_run = false;
     
@@ -175,16 +175,16 @@ int main(int argc, char* argv[]) {
 
 
     // printf("\n//////////////////Phase 4, Staring the loop//////////////////\n");
-    // while (recv(handshake_socket, recv_buffer, 1000, 0) > 0) {
+    // while (recv(handshake_socket, recv_buffer, SMALL_BUF0, 0) > 0) {
     while (global_info->status == true) {
     // while (true) {
-        // memset(recv_buffer, 0, 100);
-        recv(handshake_socket, recv_buffer, 100, 0);
+        // memset(recv_buffer, 0, SMALL_BUF);
+        recv(handshake_socket, recv_buffer, SMALL_BUF, 0);
     
         struct server_message* message = malloc(sizeof(struct server_message));
         message->global_info = global_info;
         strcpy(message->message, recv_buffer);
-        memset(recv_buffer, 0, 100);
+        memset(recv_buffer, 0, SMALL_BUF);
         message->socket = handshake_socket;
        
         pthread_create(&response_thread, NULL, response, (void*) message);
