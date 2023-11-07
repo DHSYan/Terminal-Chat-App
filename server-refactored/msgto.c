@@ -25,7 +25,8 @@ struct message* create_message(char* string) {
         message[k] = string[i];
         k++;
     }
-    message[k] = '\0';
+    message[k] = '\n';
+    message[k+1] = '\0';
 
 
     strcpy(res->username, username);

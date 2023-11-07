@@ -11,6 +11,7 @@ int system_caller(char *msg, thread_info* thread_info) {
     // Prep the message
     remove_trail_whitespace(msg);
 
+    send(thread_info->socket, "|Hello", SMALL_BUF, 0);
     int res = -1;
     if(strcmp(msg, "/login") == 0) {
         printf("login detected\n");
