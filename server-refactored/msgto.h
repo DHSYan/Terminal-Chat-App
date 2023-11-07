@@ -1,0 +1,19 @@
+#ifndef MSGTO_H
+#define MSGTO_H
+
+#include "client-handler.h"
+#include "const.h"
+#include "auth.h"
+struct message {
+    char username[SMALL_BUF];
+    char msg[SMALL_BUF];
+    int socket;
+};
+
+struct message* create_message(char* string);
+
+struct message* better_create_message(char* username, char* msg);
+void send_message(struct message* message, user* valid_users);
+int msgto(thread_info* thread_info, char* buffer);
+
+#endif 

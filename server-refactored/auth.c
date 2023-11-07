@@ -145,6 +145,8 @@ int login(thread_info* thread_info) {
         }    
     }
 
+    attempt_user->socket = socket;
+    thread_info->thread_user = attempt_user;
     return password_phase(attempt_user, socket);
 }
 

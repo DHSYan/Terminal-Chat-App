@@ -1,5 +1,6 @@
 #include "lib.h"
 
+#include "msgto.h"
 #include "protocol-processor.h"
 #include "string-util.h"
 #include "auth.h"
@@ -14,6 +15,9 @@ int system_caller(char *msg, thread_info* thread_info) {
     if(strcmp(msg, "/login") == 0) {
         printf("login detected\n");
         res = login(thread_info);
+    } else if (strstr(msg, "/msgto") != NULL) {
+        printf("/msgto detected\n");
+        res = msgto(thread_info, msg);
     } else {
         printf("This is not a recognized command: %s", msg);
     }

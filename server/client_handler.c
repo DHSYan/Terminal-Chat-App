@@ -31,7 +31,7 @@ void* client_handler(void* client_info) {
     //     is_client_alive = false;
     // } 
     else {
-        int send_res = send(connect_socket, "[ACKSYN]|Welcome", SMALL_BUF, 0);
+        int send_res = send(connect_socket, "[SYNACK]|Welcome", SMALL_BUF, 0);
         if (send_res < 0 ) {
             perror("something's wrong with sending");
         }

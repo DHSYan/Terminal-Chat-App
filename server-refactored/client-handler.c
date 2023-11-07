@@ -47,6 +47,7 @@ void* client_handler(void* client_info) {
         recv(connect_socket, buffer, SMALL_BUF, 0);
 
         client_connected = system_caller(buffer, thread_info);
+    
         if (client_connected == -1) {
             send(connect_socket, "[FIN]|Disconnected\n", SMALL_BUF, 0);
             close(connect_socket);
