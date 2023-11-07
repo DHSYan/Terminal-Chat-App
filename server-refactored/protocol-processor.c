@@ -26,7 +26,9 @@ int system_caller(char *msg, thread_info* thread_info) {
                 thread_info->thread_user);
     } else if (strstr(msg, "/creategroup") != NULL) {
         res = create_group(msg, thread_info);
-    }else {
+    } else if (strstr(msg, "/groupmsg") != NULL) {
+        res = group_msg(msg, thread_info);
+    } else {
         printf("This is not a recognized command: %s", msg);
     }
 
