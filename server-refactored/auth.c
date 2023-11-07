@@ -111,7 +111,7 @@ int password_phase(user* attempt_user, int socket) {
                     time(&seconds);
                     attempt_user->blocked_time = seconds;
                     send(socket,
-                            "[info]|You are blocked, please try again later",
+                            "[info]|You are blocked, please try again later\n",
                             SMALL_BUF,
                             0);
                     return -1;
@@ -119,7 +119,6 @@ int password_phase(user* attempt_user, int socket) {
             }
         }
     }
-    return -1;
 }
 
 int login(thread_info* thread_info) {
@@ -146,15 +145,7 @@ int login(thread_info* thread_info) {
         }    
     }
 
-    // Password Prompt
-    // print_user(attempt_user);
     return password_phase(attempt_user, socket);
-
-    // Blocckeing
-    // bool pass = false;
-
-    // return 0; // Success, return to client_handler
-              // 0 means they can process to the next stage.
 }
 
 

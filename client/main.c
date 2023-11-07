@@ -26,33 +26,48 @@
 
 #define SMALL_BUF 100
 
+struct global_info {
+    bool status; 
+};
+typedef struct global_info global_info;
+
 struct server_message {
-    char message[1000];
+    char message[100];
     int socket;
-    int connection_status;
+    global_info* global_info;
 };
 
 void* response(void* server_message) {
     struct server_message* message = (struct server_message*) server_message;
     char* send_buffer = malloc(sizeof(char) * SMALL_BUF);
     char* actual_message = strchr(message->message, '|');
+
     if (actual_message == NULL) {
-        printf("Server sent an invalid message with invalid format\n");
-        printf("\n\n\nServer sent: %s\n\n\n", actual_message);
-        return NULL;
+        // printf("Server sent an invalid message with invalid format\n");
+        // printf("\n\n\nServer sent: %s\n\n\n", actual_message);
+        // message->global_info->status = false;
     } else {
         // printf("Server response:\n  %s ", actual_message);
         printf("%s", actual_message);
+        if (strstr(message->message, "[input]") != NULL) {
+            fgets(send_buffer, 99, stdin);
+            send(message->socket, send_buffer, SMALL_BUF, 0);
+        } else if (strstr(message->message, "[FIN]") != NULL) {
+            printf("You have logout or server sent FIN\n");
+            message->global_info->status = false;
+            return NULL;
+        }
     }
+    // printf("Server response:\n  %s ", message->message);
+    // printf("%s", message->message);
+    // if (strstr(message->message, "[input]") != NULL) {
+    //     fgets(send_buffer, 99, stdin);
+    //     send(message->socket, send_buffer, SMALL_BUF, 0);
+    // } else if (strstr(message->message, "[FIN]") != NULL) {
+    //     printf("You have logout or server sent FIN\n");
+    //     message->global_info->status = false;
+    // }
 
-    if (strstr(message->message, "[input]") != NULL) {
-        fgets(send_buffer, 99, stdin);
-        send(message->socket, send_buffer, SMALL_BUF, 0);
-    } else if (strstr(message->message, "[FIN]") != NULL) {
-        printf("You have logout or server sent FIN\n");
-        message->connection_status = false;
-        return NULL;
-    }
 
     return NULL;
 }
@@ -102,11 +117,11 @@ int main(int argc, char* argv[]) {
     int server_handshake_res = recv(handshake_socket, recv_buffer, 100, 0);
 
     int allow_to_run = false;
-
-    struct server_message* message = malloc(sizeof(struct server_message));
+    
+    global_info* global_info = malloc(sizeof(struct global_info));
     
     if (strstr(recv_buffer, "[SYNACK]") != NULL) {
-        message->connection_status = true;
+        global_info->status = true;
         memset(recv_buffer, 0, SMALL_BUF);
         send(handshake_socket, "[ACK]\n", SMALL_BUF, 0);
         recv(handshake_socket, recv_buffer, SMALL_BUF, 0); // wait for server to send the comm
@@ -120,14 +135,31 @@ int main(int argc, char* argv[]) {
 
 
     // printf("\n//////////////////Phase 4, Staring the loop//////////////////\n");
-    while (recv(handshake_socket, recv_buffer, 1000, 0) > 0) {
+    // while (recv(handshake_socket, recv_buffer, 1000, 0) > 0) {
+    while (global_info->status == true) {
+        memset(recv_buffer, 0, 100);
+        recv(handshake_socket, recv_buffer, 100, 0);
 
-        strcpy(message->message, recv_buffer);
-        memset(recv_buffer, 0, SMALL_BUF);
-
-        message->socket = handshake_socket;
-
-        pthread_create(&response_thread, NULL, response, (void*) message);
+        // printf("Server response:\n  %s ", recv_buffer);
+        //
+        // if (strstr(recv_buffer, "[input]") != NULL) {
+        //     fgets(send_buffer, 99, stdin);
+        //     send(handshake_socket, send_buffer, SMALL_BUF, 0);
+        // } else if (strstr(recv_buffer, "[FIN]") != NULL) {
+        //     printf("You have logout or server sent FIN\n");
+        //     global_info->status = false;
+        // }
+        if (recv_buffer != NULL) {
+            struct server_message* message = malloc(sizeof(struct server_message));
+            message->global_info = global_info;
+            strcpy(message->message, recv_buffer);
+            message->socket = handshake_socket;
+            
+            pthread_create(&response_thread, NULL, response, (void*) message);
+        } else {
+            close(handshake_socket);
+            return -1;
+        }
     }
 
     return 0;

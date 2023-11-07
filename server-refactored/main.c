@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
                 NULL,
                 client_handler,
                 (void*) thread_info);
+
     }
 
     close(handshake_socket);
