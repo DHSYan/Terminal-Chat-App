@@ -24,7 +24,7 @@
 
 #include "interaction.h"
 
-#define SMALL_BUF 1024
+#define SMALL_BUF 2048
 
 struct global_info {
     bool status; 
@@ -61,7 +61,7 @@ void* response(void* server_message) {
         // }
     // }
     // printf("Server response:\n  %s ", message->message);
-    printf("%s", actual_message);
+    printf("\n%s", actual_message);
     if (strstr(message->message, "[input]") != NULL) {
         fgets(send_buffer, 99, stdin);
         send(message->socket, send_buffer, SMALL_BUF, 0);

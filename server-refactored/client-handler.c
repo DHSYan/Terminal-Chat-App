@@ -43,7 +43,10 @@ void* client_handler(void* client_info) {
         // listen for message 
         // pass the message to the protocol processer
         memset(buffer, 0, SMALL_BUF);
-        send(connect_socket, "[input]|Enter Command: ", SMALL_BUF, 0);
+        send(connect_socket,
+            "[input]|Enter Command (/msgto, /activeuser, /creategroup, /joingroup, /groupmsg, /p2pvideo ,/logout): \n",
+            SMALL_BUF,
+            0);
         recv(connect_socket, buffer, SMALL_BUF, 0);
 
         client_connected = system_caller(buffer, thread_info);

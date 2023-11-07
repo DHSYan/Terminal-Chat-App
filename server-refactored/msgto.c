@@ -2,17 +2,27 @@
 #include "msgto.h"
 #include "const.h"
 #include "auth.h"
+#include "string-util.h"
 
 // A parser that takes in "/msgto username message_content"
 // put in into a struct where other function can use it
-struct message* create_message(char* string) {
+struct message* create_message(char* string, thread_info* thread_info) {
     struct message* res = malloc(sizeof(struct message));
     char username[SMALL_BUF];
     char message[SMALL_BUF];
     memset(message, 0, SMALL_BUF);
     memset(username, 0, SMALL_BUF);
 
-    strcat(message, "[server][message]|");
+    strcat(message, "[message]|");
+
+    time_t timer = time(NULL);
+    strcat(message, asctime(localtime(&timer)));
+    remove_trail_whitespace(message);
+
+    strcat(message, " ");
+    strcat(message, thread_info->thread_user->username);
+    strcat(message, ": ");
+
 
     int j = 0;
 
@@ -29,7 +39,10 @@ struct message* create_message(char* string) {
         k++;
     }
     message[k] = '\n';
-    message[k+1] = '\0';
+    // message[k+1] = '\0';
+
+    strcat(message, "\n");
+    strcat(message, "|Enter Command (/msgto, /activeuser, /creategroup, /joingroup, /groupmsg, /p2pvideo ,/logout):\n\0");
 
 
     strcpy(res->username, username);
@@ -58,7 +71,7 @@ void send_message(struct message* message, user* valid_users) {
 
 
 int msgto(thread_info* thread_info, char* buffer) {
-    struct message* message = create_message(buffer);
+    struct message* message = create_message(buffer, thread_info);
     send_message(message, thread_info->global_info->valid_users);
     return 0; // for system caller
 }
