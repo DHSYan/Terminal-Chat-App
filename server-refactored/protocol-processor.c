@@ -1,3 +1,4 @@
+#include "group.h"
 #include "lib.h"
 
 #include "msgto.h"
@@ -23,7 +24,9 @@ int system_caller(char *msg, thread_info* thread_info) {
         res = print_active_user(
                 thread_info->global_info->valid_users,
                 thread_info->thread_user);
-    } else {
+    } else if (strstr(msg, "/creategroup") != NULL) {
+        res = create_group(msg, thread_info);
+    }else {
         printf("This is not a recognized command: %s", msg);
     }
 

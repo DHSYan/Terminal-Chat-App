@@ -7,13 +7,13 @@
 
 user* create_node(user* next) {
     user* res = malloc(sizeof(struct user));
-    res->username = malloc(sizeof(char) * 1000);
-    res->password = malloc(sizeof(char) * 1000);
-    res->last_log_on = malloc(sizeof(char) *1000);
-    res->addr =  malloc(sizeof(char) * 1000);
-    res->group = malloc(sizeof(char*) * 1000);
-    for (int i = 0; i < 1000; i++) {
-        res->group[i] = malloc(sizeof(char) * 1000);
+    res->username = malloc(sizeof(char) * SMALL_BUF);
+    res->password = malloc(sizeof(char) * SMALL_BUF);
+    res->last_log_on = malloc(sizeof(char) *SMALL_BUF);
+    res->addr =  malloc(sizeof(char) * SMALL_BUF);
+    res->group = malloc(sizeof(char*) * SMALL_BUF);
+    for (int i = 0; i < SMALL_BUF; i++) {
+        res->group[i] = malloc(sizeof(char) * SMALL_BUF);
     }
     res->num_group = 0;
     res->next = next;

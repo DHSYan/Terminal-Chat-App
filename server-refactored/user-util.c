@@ -2,10 +2,10 @@
 #include "user-util.h"
 #include "const.h"
 
-int print_active_user(user* valid_user, user* thread_user) {
+int print_active_user(user* valid_users, user* thread_user) {
     int i = 0;
     char* send_buffer = malloc(sizeof(char)*SMALL_BUF);
-    for (user* cur = valid_user; cur; cur=cur->next) {
+    for (user* cur = valid_users; cur; cur=cur->next) {
         if (cur->isActive && cur != thread_user) {
             sprintf(send_buffer, 
                     "[info]|"

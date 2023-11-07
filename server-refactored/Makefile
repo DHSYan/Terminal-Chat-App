@@ -7,7 +7,7 @@ CC = gcc
 
 LIB = lib.h const.h
 
-FILES = main.c client-handler.o protocol-processor.o string-util.o auth.o msgto.o user-util.o
+FILES = main.c client-handler.o protocol-processor.o string-util.o auth.o msgto.o user-util.o group.o
 
 ${EXEC}: ${FILES} ${LIB}
 	${CC} ${FILES} -o ${EXEC}
@@ -32,6 +32,10 @@ msgto.o: msgto.c msgto.h ${LIB}
 
 user-util.o: user-util.c user-util.h ${LIB}
 	${CC} -c user-util.c
+
+group.o: group.c group.h ${LIB}
+	${CC} -c group.c
+
 .PHONY: clean
 
 clean: 
