@@ -14,7 +14,7 @@ struct user {
     int port; 
     int socket;
     char* last_log_on;
-    char** group;
+    struct group* grouplst;
     int num_group; // the number of groups that a user is in
     struct user* next;
 };

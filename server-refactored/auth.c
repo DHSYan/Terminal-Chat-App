@@ -1,3 +1,4 @@
+#include "group.h"
 #include "lib.h"
 #include "auth.h"
 #include "const.h"
@@ -11,11 +12,8 @@ user* create_node(user* next) {
     res->password = malloc(sizeof(char) * SMALL_BUF);
     res->last_log_on = malloc(sizeof(char) *SMALL_BUF);
     res->addr =  malloc(sizeof(char) * SMALL_BUF);
-    res->group = malloc(sizeof(char*) * SMALL_BUF);
-    for (int i = 0; i < SMALL_BUF; i++) {
-        res->group[i] = malloc(sizeof(char) * SMALL_BUF);
-    }
-    res->num_group = 0;
+    // res->grouplst = malloc(sizeof(struct group));
+    res->grouplst = NULL;
     res->next = next;
     res->isActive = false;
     res->socket = 0;
@@ -179,11 +177,6 @@ void print_user(user* user) {
     printf("    Attempt Left: %d\n", user->attempt);
     printf("    socket num: %d\n", user->socket);
     printf("    isActive: %d\n", user->isActive);
-    for (int i = 0; i < user->num_group; i++) {
-        printf("    Groups: ");
-        printf("%s ", user->group[i]);
-    }
-    printf("    # of group: %d\n", user->num_group);
     printf("----------------end------------------\n");
 }
 

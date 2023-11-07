@@ -59,7 +59,7 @@ struct message* better_create_message(char* username, char* msg) {
     strcat(message, "[message]|");
     strcat(message, msg);
     strcat(message, "\n");
-    // strcat(message, "|Enter Command (/msgto, /activeuser, /creategroup, /joingroup, /groupmsg, /p2pvideo ,/logout):\n\0");
+    strcat(message, "|Enter Command (/msgto, /activeuser, /creategroup, /joingroup, /groupmsg, /p2pvideo ,/logout):\n\0");
 
     strcpy(res->msg, message);
 

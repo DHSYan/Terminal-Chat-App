@@ -28,6 +28,8 @@ int system_caller(char *msg, thread_info* thread_info) {
         res = create_group(msg, thread_info);
     } else if (strstr(msg, "/groupmsg") != NULL) {
         res = group_msg(msg, thread_info);
+    } else if (strstr(msg, "/joingroup") != NULL) {
+        res = join_group(msg, thread_info->thread_user);
     } else {
         printf("This is not a recognized command: %s", msg);
     }
