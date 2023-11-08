@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
     global_info->message_seq_sum = 0;
     global_info->valid_users = valid_users;
     global_info->userlog = init_logging("userlog.txt");
-    // global_info->messagelog = init_logging("messagelog.txt");
+    global_info->messagelog = init_logging("messagelog.txt");
 
     while(true) {
         struct sockaddr_storage client_addr;

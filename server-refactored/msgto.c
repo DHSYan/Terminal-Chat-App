@@ -1,4 +1,5 @@
 #include "lib.h"
+#include "logging.h"
 #include "msgto.h"
 #include "const.h"
 #include "auth.h"
@@ -49,6 +50,8 @@ struct message* create_message(char* string, thread_info* thread_info) {
     strcpy(res->username, username);
     strcat(res->msg, message);
     
+    log_msgto(thread_info, string);
+
     return res;
 }
 
@@ -90,15 +93,17 @@ struct message* better_create_message(
     return res;
 }
 
-void send_message(struct message* message, user* valid_users) {
+void send_message(struct message* message, thread_info* thread_info) {
+    user* valid_users = thread_info->global_info->valid_users;
+
     struct user* receiver = return_user(message->username, valid_users);
     send(receiver->socket, message->msg, SMALL_BUF, 0);
-    printf("We send: %s, to %s on %d\n", message->msg,receiver->username, receiver->socket);
+    // printf("We send: %s, to %s on %d\n", message->msg,receiver->username, receiver->socket);
 }
 
 
 int msgto(thread_info* thread_info, char* buffer) {
     struct message* message = create_message(buffer, thread_info);
-    send_message(message, thread_info->global_info->valid_users);
+    send_message(message, thread_info);
     return 0; // for system caller
 }

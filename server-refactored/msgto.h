@@ -17,7 +17,7 @@ struct message* better_create_message(
         char* groupname,
         char* msg,
         thread_info* thread_info);
-void send_message(struct message* message, user* valid_users);
+void send_message(struct message* message, thread_info* thread_info);
 int msgto(thread_info* thread_info, char* buffer);
 
 #endif 

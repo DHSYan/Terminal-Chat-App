@@ -202,7 +202,7 @@ int group_msg(char* arguments, thread_info* thread_info) {
                                               groupname,
                                               final_message,
                                               thread_info),
-                        valid_users);
+                        thread_info);
             } 
         }
     }
