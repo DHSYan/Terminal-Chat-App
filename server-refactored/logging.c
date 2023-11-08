@@ -95,17 +95,8 @@ void log_groupchat(thread_info* thread_info, char* groupname,
     strcpy(time, asctime(localtime(&timer)));
     int len_time = strlen(time);
     time[len_time-1] = '\0'; // to remove the whitespace at the end
-
-    // int j = 0;
-    //
-    // for (int i = 10; !isspace(raw_message[i]); i++)  {
-    //     j++;
-    // }
-    // j++;
-    // int raw_message_offset = j + 10;
-
    
-    fprintf(logfile, "%d; %s; %s; %s; %s\n\n", seq_num, time, groupname,
+    fprintf(logfile, "%d; %s; %s; %s\n\n", seq_num, time,
             username,
             raw_message);
     fclose(logfile);

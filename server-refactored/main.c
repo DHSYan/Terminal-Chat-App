@@ -55,8 +55,8 @@ int main(int argc, char* argv[]) {
     pthread_t client_thread;
 
     global_info* global_info = malloc(sizeof(struct global_info));
-    global_info->active_user_seq_num = 0;
-    global_info->message_seq_sum = 0;
+    global_info->active_user_seq_num = 1;
+    global_info->message_seq_sum = 1;
     global_info->valid_users = valid_users;
     global_info->userlog = init_logging("userlog.txt");
     global_info->messagelog = init_logging("messagelog.txt");
