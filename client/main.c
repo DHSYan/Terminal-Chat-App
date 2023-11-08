@@ -43,8 +43,8 @@ void* response(void* server_message) {
     char* actual_message = strchr(message->message, '|');
 
     if (actual_message == NULL) {
-        printf("Server sent an invalid message with invalid format\n");
-        printf("\n\n\nServer sent: %s\n\n\n", actual_message);
+        // printf("Server sent an invalid message with invalid format\n");
+        // printf("\n\n\nServer sent: %s\n\n\n", actual_message);
         message->global_info->status = false;
         return NULL;
     } 
@@ -66,7 +66,7 @@ void* response(void* server_message) {
         fgets(send_buffer, 99, stdin);
         send(message->socket, send_buffer, SMALL_BUF, 0);
     } else if (strstr(message->message, "[FIN]") != NULL) {
-        printf("You have logout or server sent FIN\n");
+        // printf("You have logout or server sent FIN\n");
         message->global_info->status = false;
     }
 

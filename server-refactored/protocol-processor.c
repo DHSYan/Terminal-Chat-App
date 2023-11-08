@@ -30,6 +30,8 @@ int system_caller(char *msg, thread_info* thread_info) {
         res = group_msg(msg, thread_info);
     } else if (strstr(msg, "/joingroup") != NULL) {
         res = join_group(msg, thread_info->thread_user);
+    } else if (strstr(msg, "/logout") != NULL) {
+        res = -1;
     } else {
         printf("This is not a recognized command: %s", msg);
     }
