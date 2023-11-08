@@ -226,7 +226,8 @@ int group_msg(char* arguments, thread_info* thread_info) {
                                               groupname,
                                               final_message,
                                               thread_info),
-                        thread_info);
+                        thread_info,
+                        false);
                 log_groupchat(thread_info, groupname, 
                         thread_info->thread_user->username,
                         cur_group->seq_num, final_message);
