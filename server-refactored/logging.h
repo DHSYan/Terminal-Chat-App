@@ -9,4 +9,9 @@ FILE* init_logging(char* filename);
 void log_login(struct thread_info* thread_info, char* username);
 
 void log_msgto(thread_info* thread_info, char* message);
+
+void log_groupchat(thread_info* thread_info, char* groupname,
+        char* username,
+        int seq_num,
+        char* raw_message);
 #endif

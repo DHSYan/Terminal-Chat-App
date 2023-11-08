@@ -3,20 +3,33 @@
 #include "const.h"
 #include "group.h"
 #include "auth.h"
+#include "logging.h"
 #include "msgto.h"
 #include "string-util.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 
-group* create_group_node(char* groupname, group* next) {
+group* create_group_node(char* groupname, group* next, int seq_num) {
     group* res = malloc(sizeof(struct group));
     res->name = malloc(sizeof(char) * SMALL_BUF);
     remove_trail_whitespace(groupname);
     strcpy(res->name, groupname);
+    res->seq_num = seq_num;
     res->next = next;
     res->joined = false;
     return res;
+}
+
+void update_seq_num(char* groupname, thread_info* thread_info) {
+    user* valid_users = thread_info->global_info->valid_users;
+
+    for (user* cur = valid_users; cur; cur=cur->next) {
+        group* group_target = return_group(cur, groupname);
+        if (group_target != NULL) {
+            group_target->seq_num++;
+        }
+    }
 }
 
 group* return_group(user* valid_users, char* groupname) {
@@ -32,8 +45,19 @@ group* return_group(user* valid_users, char* groupname) {
     return NULL;
 }
 
-void add_to_group(char* groupname, user* user) {
-    user->grouplst = create_group_node(groupname, NULL); 
+void add_to_group(char* groupname, user* user_target, thread_info* thread_info) {
+    user* valid_users = thread_info->global_info->valid_users;
+    int seq_num = 1;
+    group* group_target = NULL;
+    for (user* cur = valid_users; cur; cur=cur->next) {
+        group* group_target = return_group(valid_users, groupname);
+    }
+
+    if (group_target != NULL) { // exxisiting Group
+        seq_num = group_target->seq_num;
+    } 
+        
+    user_target->grouplst = create_group_node(groupname, user_target->grouplst, seq_num); 
 }
 
 int join_group(char* arg, user* thread_user) {
@@ -103,7 +127,7 @@ int create_group(char* arguments, thread_info* thread_info) {
                 send(thread_info->socket, err, SMALL_BUF, 0);
             } else {
                 if (usertoadd->isActive) {
-                    add_to_group(groupname, usertoadd);
+                    add_to_group(groupname, usertoadd, thread_info);
                 } else {
                     sprintf(err,
                             "[info]|User: %s is not active, Not added\n",
@@ -118,7 +142,7 @@ int create_group(char* arguments, thread_info* thread_info) {
         }
 
         // The Person who issue the command automatically gets joined
-        add_to_group(groupname, thread_user);
+        add_to_group(groupname, thread_user, thread_info);
         char modified_groupname[SMALL_BUF];
         strcpy(modified_groupname, "/joingroup ");
         strcat(modified_groupname, groupname);
@@ -203,6 +227,11 @@ int group_msg(char* arguments, thread_info* thread_info) {
                                               final_message,
                                               thread_info),
                         thread_info);
+                log_groupchat(thread_info, groupname, 
+                        thread_info->thread_user->username,
+                        cur_group->seq_num, final_message);
+                update_seq_num(groupname, thread_info);
+
             } 
         }
     }
