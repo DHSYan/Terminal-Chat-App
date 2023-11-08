@@ -11,6 +11,7 @@ typedef struct global_info {
     FILE* messagelog;
     struct user* valid_users;
     int active_user_seq_num;
+    int message_seq_sum;
 } global_info;
 
 // This will contain all the inforamiot that is specific to the client

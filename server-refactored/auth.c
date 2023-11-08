@@ -2,6 +2,7 @@
 #include "lib.h"
 #include "auth.h"
 #include "const.h"
+#include "logging.h"
 #include "string-util.h"
 #include <stdlib.h>
 #include <string.h>
@@ -111,8 +112,10 @@ int password_phase(user* attempt_user, int socket, thread_info* thread_info) {
 
                 attempt_user->socket = socket;
 
-                thread_info->global_info->active_user_seq_num++;
                 thread_info->thread_user = attempt_user;
+
+
+                log_login(thread_info, attempt_user->username);
 
                 return 0; // Sucess
             } else {
