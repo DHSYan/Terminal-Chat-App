@@ -48,7 +48,7 @@ int join_group(char* arg, user* thread_user) {
     char* message = malloc(sizeof(char)*SMALL_BUF);
     group* group_target = return_group(thread_user, groupname);
     if (group_target == NULL) {
-        sprintf(message, "[info]|You are not added to the group: %s\n", groupname);
+        sprintf(message, "[info]|Group %s doesn't exist\n", groupname);
     } else {
         sprintf(message, "[info]|Joined the group: %s sucessfully\n", groupname);
         group_target->joined = true;
@@ -163,7 +163,7 @@ int group_msg(char* arguments, thread_info* thread_info) {
     group* grouptarget = return_group(valid_users, groupname); 
     if (grouptarget == NULL) { // group exist?
         sprintf(error_res, 
-                "[info]|A group chat (Name: %s) does NOT exists",
+                "[info]|A group chat (Name: %s) does NOT exists\n",
                 groupname);
         send(thread_info->socket, error_res, SMALL_BUF, 0);
         return 0;
@@ -181,6 +181,7 @@ int group_msg(char* arguments, thread_info* thread_info) {
     // Building up the message, after strtok-ing it
     // protocol format will be taken care of by better_create_message();
     char final_message[SMALL_BUF]; 
+    memset(final_message, 0, SMALL_BUF);
     while (parsed) {
         printf("Strcatting the Message: %s..\n", parsed);
         strcat(final_message, parsed);
@@ -197,7 +198,10 @@ int group_msg(char* arguments, thread_info* thread_info) {
                 send(thread_user->socket, error_res, SMALL_BUF, 0);
             } else if (cur_group->joined == true) {
                 send_message(
-                        better_create_message(cur->username, final_message),
+                        better_create_message(cur->username,
+                                              groupname,
+                                              final_message,
+                                              thread_info),
                         valid_users);
             } 
         }

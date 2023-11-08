@@ -12,7 +12,11 @@ struct message {
 
 struct message* create_message(char* string, thread_info* thread_info);
 
-struct message* better_create_message(char* username, char* msg);
+struct message* better_create_message(
+        char* username,
+        char* groupname,
+        char* msg,
+        thread_info* thread_info);
 void send_message(struct message* message, user* valid_users);
 int msgto(thread_info* thread_info, char* buffer);
 

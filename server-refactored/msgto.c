@@ -3,6 +3,7 @@
 #include "const.h"
 #include "auth.h"
 #include "string-util.h"
+#include <string.h>
 
 // A parser that takes in "/msgto username message_content"
 // put in into a struct where other function can use it
@@ -38,10 +39,10 @@ struct message* create_message(char* string, thread_info* thread_info) {
         message[k] = string[i];
         k++;
     }
-    message[k] = '\n';
+    // message[k] = '\n';
     // message[k+1] = '\0';
 
-    strcat(message, "\n");
+    strcat(message, "\n\n");
     strcat(message, "|Enter Command (/msgto, /activeuser, /creategroup, /joingroup, /groupmsg, /p2pvideo ,/logout):\n\0");
 
 
@@ -51,14 +52,37 @@ struct message* create_message(char* string, thread_info* thread_info) {
     return res;
 }
 
-struct message* better_create_message(char* username, char* msg) {
+struct message* better_create_message(
+        char* username,
+        char* groupname,
+        char* msg,
+        thread_info* thread_info) {
+
     struct message* res = malloc(sizeof(struct message));
+    memset(res->msg, 0, SMALL_BUF);
     strcpy(res->username, username);
 
     char message[SMALL_BUF];
+    memset(message, 0, SMALL_BUF);
+
     strcat(message, "[message]|");
+
+    time_t timer = time(NULL);
+    strcat(message, asctime(localtime(&timer)));
+    remove_trail_whitespace(message);
+    strcat(message, ", ");
+
+    strcat(message, groupname);
+    strcat(message, ", ");
+
+
+
+    strcat(message, thread_info->thread_user->username);
+    strcat(message, ": ");
+
     strcat(message, msg);
-    strcat(message, "\n");
+    strcat(message, "\n\n");
+
     strcat(message, "|Enter Command (/msgto, /activeuser, /creategroup, /joingroup, /groupmsg, /p2pvideo ,/logout):\n\0");
 
     strcpy(res->msg, message);
