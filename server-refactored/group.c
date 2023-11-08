@@ -171,7 +171,7 @@ int group_msg(char* arguments, thread_info* thread_info) {
     }
 
     group* isthreaduseringroup = return_group(thread_user, groupname);
-    if (isthreaduseringroup == NULL) { // is thread_user in group?
+    if (isthreaduseringroup->joined == false) { // is thread_user in group?
         sprintf(error_res, 
                 "[info]|Please join the group before sending messages\n");
         send(thread_info->socket, error_res, SMALL_BUF, 0);
