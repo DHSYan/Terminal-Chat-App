@@ -23,6 +23,7 @@
 #include <unistd.h>
 
 #include "interaction.h"
+#include "util.h"
 
 #define SMALL_BUF 2048
 
@@ -56,14 +57,24 @@ void sending(char* addr, char* port, char* filename, char* caller_username,
     if (resolve_addr < 0) { perror("can't get reicever dadr\n"); };
 
     FILE* file = fopen(filename, "rb");
+    if (file == NULL) {
+        perror("Can't open file when sending\n");
+        return;
+    }
+
     int bytesread;
     char buffer[SMALL_BUF];
     char ok_buffer[SMALL_BUF];
+    char prep_buffer[SMALL_BUF];
 
-    sendto(socket, caller_username, SMALL_BUF, 0,
+    remove_trail_whitespace(caller_username);
+    strcat(prep_buffer, caller_username);
+    strcat(prep_buffer, "|");
+    strcat(prep_buffer, filename);
+
+    sendto(socket, prep_buffer, SMALL_BUF, 0,
             res->ai_addr, res->ai_addrlen);
-    sendto(socket, filename, SMALL_BUF, 0,
-            res->ai_addr, res->ai_addrlen);
+
 
     // Tutorial Sample Code
     while((bytesread = fread(buffer, 1, SMALL_BUF, file)) > 0) {
@@ -103,18 +114,22 @@ void* response(void* server_message) {
         // We need to store addr and port and filename
         // "[P2P]|addr port filename caller_username"
         char* parsed = strtok(actual_message+1, " ");
+        printf("Looking at %s\n", parsed);
 
         char addr[SMALL_BUF];
         strcpy(addr, parsed);
         parsed = strtok(NULL, " ");
+        printf("Looking at %s\n", parsed);
 
         char port[SMALL_BUF];
         strcpy(port, parsed);
         parsed = strtok(NULL, " ");
+        printf("Looking at %s\n", parsed);
 
         char filename[SMALL_BUF];
         strcpy(filename, parsed);
         parsed = strtok(NULL, " ");
+        printf("Looking at %s\n", parsed);
         
         char caller_username[SMALL_BUF];
         strcpy(caller_username, parsed);
@@ -160,6 +175,7 @@ void* listening(void* listening_info) {
         strcat(recvfilename, username);
         strcat(recvfilename, "_");
         strcat(recvfilename, filename);
+        printf("We are going to create %s\n", recvfilename);
 
         
         FILE* file = fopen(recvfilename, "wb");
