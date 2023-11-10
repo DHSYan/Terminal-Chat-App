@@ -22,6 +22,7 @@ typedef struct thread_info {
     char* addr;
     int port;
     struct user* thread_user;
+    int udp_port;
 } thread_info;
 
 void* client_handler(void* client_info);

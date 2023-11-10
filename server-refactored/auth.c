@@ -114,6 +114,8 @@ int password_phase(user* attempt_user, int socket, thread_info* thread_info) {
 
                 thread_info->thread_user = attempt_user;
 
+                attempt_user->udp_port = thread_info->udp_port;
+
 
                 log_login(thread_info, attempt_user->username);
 

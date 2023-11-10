@@ -12,6 +12,7 @@ struct user {
     bool isActive;
     char* addr;
     int port; 
+    int udp_port;
     int socket;
     char* last_log_on;
     struct group* grouplst;
