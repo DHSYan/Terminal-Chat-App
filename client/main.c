@@ -21,7 +21,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <unistd.h>
-
+#include <ctype.h>
 
 #define SMALL_BUF 2048
 
@@ -35,6 +35,64 @@ struct server_message {
     int socket;
     global_info* global_info;
 };
+
+void remove_trail_whitespace(char* string) {
+    int len = strlen(string);
+    for (int i = len-1; isspace(string[i]); i--) {
+        string[i] = '\0';
+    }
+}
+
+void p2psendfile(char* addr, char* port, char* filename, char* caller_username) {
+    struct addrinfo hints;
+    struct addrinfo* res;
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_DGRAM;
+
+    int resolve_addr = getaddrinfo(addr, port, &hints, &res);
+    if (resolve_addr < 0) { perror("can't get reicever dadr\n"); };
+
+    int sendsocket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+
+    FILE* file = fopen(filename, "rb");
+    int bytesread;
+
+    char buffer[SMALL_BUF];
+    memset(buffer, 0, SMALL_BUF);
+
+    char ok_buffer[SMALL_BUF];
+
+    char message[SMALL_BUF];
+    strcat(message, caller_username);
+    strcat(message, "|");
+    strcat(message, filename);
+
+    sendto(sendsocket, message, SMALL_BUF, 0,
+            res->ai_addr, res->ai_addrlen);
+
+    // Tutorial Sample Code
+    while((bytesread = fread(buffer, 1, SMALL_BUF, file)) > 0) {
+        memset(ok_buffer, 0, SMALL_BUF);
+        recvfrom(sendsocket, ok_buffer, SMALL_BUF, 0,
+                 NULL, NULL);
+        if (strstr(ok_buffer, "[OK]") != NULL) {
+            sendto(sendsocket, buffer, SMALL_BUF, 0,
+                    res->ai_addr, res->ai_addrlen);
+        } else {
+            printf("instead of [OK] We got: %s\n", ok_buffer);
+            printf("Receiver is not responding");
+            return; // break out of the function
+        }
+        memset(buffer, 0, SMALL_BUF);
+    }
+    fclose(file);
+
+    sendto(sendsocket, "[DONE]\n", SMALL_BUF, 0,
+            res->ai_addr, res->ai_addrlen);
+
+}
 
 void* response(void* server_message) {
     struct server_message* message = (struct server_message*) server_message;
@@ -51,15 +109,40 @@ void* response(void* server_message) {
         send(message->socket, send_buffer, SMALL_BUF, 0);
     } else if (strstr(message->message, "[FIN]") != NULL) {
         message->global_info->status = false;
-    }
+    } else if (strstr(message->message, "[P2P]") != NULL) {
+        char* parsed = strtok(actual_message+1, " ");
 
+        char addr[SMALL_BUF];
+        strcpy(addr, parsed);
+        printf("addr: %s\n", addr);
+        parsed = strtok(NULL, " ");
+    
+
+        char port[SMALL_BUF];
+        strcpy(port, parsed);
+        printf("port: %s\n", port);
+        parsed = strtok(NULL, " ");
+
+        char filename[SMALL_BUF];
+        strcpy(filename, parsed);
+        printf("filename: %s\n", filename);
+        parsed = strtok(NULL, " ");
+
+        char caller_username[SMALL_BUF];
+        strcpy(caller_username, parsed);
+        printf("caller_username: %s\n", caller_username);
+
+        p2psendfile(addr, port, filename, caller_username);
+    }
 
     return NULL;
 }
 
+
 void* receivefile(void* socket) {
     int udp_socket_listen = *((int*) socket);
     printf("We are also listening from a UDP socket: %d\n", udp_socket_listen);
+    FILE* file = NULL;
 
     while (true) {
         char buffer[SMALL_BUF];
@@ -80,6 +163,7 @@ void* receivefile(void* socket) {
         char* parsed = strtok(buffer, "|");
         printf("Username: %s\n", parsed);
         strcpy(username, parsed);
+        remove_trail_whitespace(username);
     
         parsed = strtok(NULL, "|");
         printf("filename: %s\n", parsed);
@@ -89,11 +173,12 @@ void* receivefile(void* socket) {
         strcat(recvfilename, username);
         strcat(recvfilename, "_");
         strcat(recvfilename, filename);
+        printf("we are receving the file: %s\n", recvfilename);
     
     
-        FILE* file = fopen(recvfilename, "wb");
-        memset(buffer, 0, SMALL_BUF);
-        while(strcmp(buffer, "[DONE]") != 0) {
+        file = fopen(recvfilename, "wb");
+        while(strstr(buffer, "[DONE]") == NULL) {
+            memset(buffer, 0, SMALL_BUF);
             sendto(udp_socket_listen,
                    "[OK]\n",
                    SMALL_BUF, 
@@ -101,18 +186,25 @@ void* receivefile(void* socket) {
                    ((struct sockaddr*)&presenter), 
                    ((struct sockaddr_in*)&presenter)->sin_len);
     
+            memset(buffer, 0, SMALL_BUF);
             recvfrom(udp_socket_listen,
                      buffer,
                      SMALL_BUF,
                      0,
                      (struct sockaddr*) &presenter,
                      &presenter_len);
-    
-            fwrite(buffer, 1, SMALL_BUF, file);
+            if (strstr(buffer, "[DONE]") != NULL) {
+                fclose(file);
+            } else {
+                fwrite(buffer, 1, SMALL_BUF, file);
+            }
         }
         fclose(file);
         printf("File Transfer Complete\n");
+        printf("\n|Enter Command (/msgto, /activeuser, /creategroup, "
+                "/joingroup, /groupmsg, /p2pvideo ,/logout):\n");
     }
+    fclose(file);
     return NULL;
 }
 
