@@ -60,6 +60,10 @@ void* response(void* server_message) {
 
 
 int main(int argc, char* argv[]) {
+    if (argc != 4) {
+        printf("usage: ./client server_IP server_port client_udp_server_port\n");
+        return -1;
+    }
     struct addrinfo hints;
     struct addrinfo* res;
 
@@ -67,8 +71,9 @@ int main(int argc, char* argv[]) {
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
 
-    const char* server_addr = "127.0.0.1";
-    const char* server_port = argv[1];
+    const char* server_addr = argv[1];
+    const char* server_port = argv[2];
+    const char* my_udp_port = argv[3];
 
     int get_addr_res = getaddrinfo(server_addr, server_port, &hints, &res);
     
