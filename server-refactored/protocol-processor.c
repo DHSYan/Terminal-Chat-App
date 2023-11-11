@@ -7,6 +7,8 @@
 #include "auth.h"
 #include "user-util.h"
 
+
+
 // msg should be a heap allocated string
 // returns -1 when the client dc-ed, or should be dc-ed
 int system_caller(char *msg, thread_info* thread_info) {
@@ -33,6 +35,8 @@ int system_caller(char *msg, thread_info* thread_info) {
     } else if (strstr(msg, "/logout") != NULL) {
         res = -1;
     } else {
+        send(thread_info->socket, "[info]|Invalid Command\n", SMALL_BUF, 0);
+        res = 0;
         printf("This is not a recognized command: %s", msg);
     }
 
