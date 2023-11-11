@@ -2,6 +2,7 @@
 #include "const.h"
 #include "client-handler.h"
 #include "protocol-processor.h"
+#include "auth.h"
 
 void* client_handler(void* client_info) {
     struct thread_info* thread_info = 
@@ -62,6 +63,7 @@ void* client_handler(void* client_info) {
                     "[FIN]|Bye, Thank you using 3331ChatApp\n",
                     SMALL_BUF,
                     0);
+            thread_info->thread_user->isActive = false;
             close(connect_socket);
         }
     }

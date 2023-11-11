@@ -82,8 +82,6 @@ int main(int argc, char* argv[]) {
         */
         thread_info->addr = 
             inet_ntoa((((struct sockaddr_in*)&client_addr)->sin_addr));
-        // thread_info->port =
-        //     ntohs(((struct sockaddr_in*)&client_addr)->sin_port);
         
         pthread_create(
                 &client_thread,
