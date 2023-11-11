@@ -20,7 +20,6 @@ typedef struct thread_info {
     struct global_info* global_info;
     int socket;
     char* addr;
-    int port;
     int udp_port;
     struct user* thread_user;
 } thread_info;

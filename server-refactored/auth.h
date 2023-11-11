@@ -11,7 +11,7 @@ struct user {
     int attempt;
     bool isActive;
     char* addr;
-    int port; 
+    int udp_port;
     int socket;
     char* last_log_on;
     struct group* grouplst;

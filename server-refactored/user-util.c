@@ -12,11 +12,11 @@ int print_active_user(user* valid_users, user* thread_user) {
                     "Username: %s\n"
                     "    Time since Active: %s\n"
                     "    IP: %s\n"
-                    "    Port Num: %d\n", 
+                    "    UDP Port Num: %d\n", 
                     cur->username, 
                     cur->last_log_on,
                     cur->addr,
-                    cur->port);
+                    cur->udp_port);
             i++;
         }
     }

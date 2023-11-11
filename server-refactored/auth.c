@@ -105,7 +105,9 @@ int password_phase(user* attempt_user, int socket, thread_info* thread_info) {
 
                 attempt_user->isActive = true;
                 strcpy(attempt_user->addr, thread_info->addr);
-                attempt_user->port = thread_info->port;
+                // attempt_user->port = thread_info->port;
+                // attempt_user->udp_port = thread_info->udp_port;
+                // printf("hi %d\n", attempt_user->udp_port);
 
                 time_t timer = time(NULL);
                 strcpy(attempt_user->last_log_on, asctime(localtime(&timer)));

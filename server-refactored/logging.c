@@ -41,9 +41,9 @@ void log_login(struct thread_info* thread_info, char* username) {
     thread_info->global_info->active_user_seq_num++;
 
     char* addr = thread_info->addr;
-    int port = thread_info->port;
+    int udp_port = thread_info->udp_port;
 
-    fprintf(userlog, "%d; %s; %s; %s; %d\n", seq_num, time, username, addr, port);
+    fprintf(userlog, "%d; %s; %s; %s; %d\n", seq_num, time, username, addr, udp_port);
     fclose(userlog);
 }
 
