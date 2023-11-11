@@ -184,7 +184,7 @@ void* receivefile(void* socket) {
                    SMALL_BUF, 
                    0,
                    ((struct sockaddr*)&presenter), 
-                   sizeof(presenter));
+                   ((struct sockaddr_in*)&presenter)->sin_len);
     
             memset(buffer, 0, SMALL_BUF);
             recvfrom(udp_socket_listen,
@@ -199,12 +199,12 @@ void* receivefile(void* socket) {
                 fwrite(buffer, 1, SMALL_BUF, file);
             }
         }
-        fclose(file);
+        // fclose(file);
         printf("File Transfer Complete\n");
         printf("\n|Enter Command (/msgto, /activeuser, /creategroup, "
                 "/joingroup, /groupmsg, /p2pvideo ,/logout):\n");
     }
-    fclose(file);
+    // fclose(file);
     return NULL;
 }
 
