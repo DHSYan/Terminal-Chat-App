@@ -6,6 +6,7 @@
 #include "string-util.h"
 #include "auth.h"
 #include "user-util.h"
+#include "p2p.h"
 
 
 
@@ -34,6 +35,9 @@ int system_caller(char *msg, thread_info* thread_info) {
         res = join_group(msg, thread_info->thread_user);
     } else if (strstr(msg, "/logout") != NULL) {
         res = -1;
+    } else if (strstr(msg, "/p2pvideo") != NULL) {
+        res = p2p(msg, thread_info);
+
     } else {
         send(thread_info->socket, "[info]|Invalid Command\n", SMALL_BUF, 0);
         res = 0;
