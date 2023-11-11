@@ -94,6 +94,7 @@ int password_phase(user* attempt_user, int socket, thread_info* thread_info) {
         return -1;
     } else { // attempt > 0
         while (true) {
+            sleep(1);
             char* buffer = password_prompt(socket);
             remove_trail_whitespace(buffer);
 

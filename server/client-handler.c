@@ -26,7 +26,7 @@ void* client_handler(void* client_info) {
         char* parsed = strtok(buffer, "|");
         parsed = strtok(NULL, "|");
         thread_info->udp_port = atoi(parsed);
-        printf("The UDP Port of this therad is %d\n", thread_info->udp_port);
+        // printf("The UDP Port of this therad is %d\n", thread_info->udp_port);
 
         int send_res = send(connect_socket, "[SYNACK]|Welcome\n", SMALL_BUF, 0);
         if (send_res < 0 ) {

@@ -18,10 +18,10 @@ int system_caller(char *msg, thread_info* thread_info) {
 
     int res = -1;
     if(strcmp(msg, "/login") == 0) {
-        printf("login detected\n");
+        // printf("login detected\n");
         res = login(thread_info);
     } else if (strstr(msg, "/msgto") != NULL) {
-        printf("/msgto detected\n");
+        // printf("/msgto detected\n");
         res = msgto(thread_info, msg);
     } else if (strstr(msg, "/activeuser") != NULL) {
         res = print_active_user(
