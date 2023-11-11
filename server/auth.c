@@ -120,6 +120,10 @@ int password_phase(user* attempt_user, int socket, thread_info* thread_info) {
                 return 0; // Sucess
             } else {
                 attempt_user->attempt--;
+                send(socket, 
+                        "[info]|Invalid Password.\n",
+                        SMALL_BUF, 
+                        0);
                 if (attempt_user->attempt == 0) {
                     attempt_user->attempt = 1;
                     time(&seconds);
