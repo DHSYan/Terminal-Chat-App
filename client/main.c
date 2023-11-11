@@ -64,6 +64,31 @@ int main(int argc, char* argv[]) {
         printf("usage: ./client server_IP server_port client_udp_server_port\n");
         return -1;
     }
+
+    const char* server_addr = argv[1];
+    const char* server_port = argv[2];
+    const char* my_udp_port = argv[3];
+
+    //////////////////////////////UDP SETUP/////////////////////////////////////
+    struct addrinfo udp_hints;
+    struct addrinfo* udp_res;
+
+    memset(&udp_hints, 0, sizeof(udp_hints));
+    udp_hints.ai_family = AF_INET;
+    udp_hints.ai_socktype = SOCK_DGRAM;
+    udp_hints.ai_flags = AI_PASSIVE;
+
+    // Beej
+    int udp_get_addr_res = getaddrinfo(NULL, my_udp_port, &udp_hints, &udp_res);
+    int udp_socket_listen = 
+        socket(udp_res->ai_family, 
+                udp_res->ai_socktype,
+                udp_res->ai_protocol);
+    int udp_bind_res = 
+        bind(udp_socket_listen, udp_res->ai_addr, udp_res->ai_addrlen);
+
+    
+    // printf("\n//////////////////Phase 1, creating the socket and connecting//////////////////\n");
     struct addrinfo hints;
     struct addrinfo* res;
 
@@ -71,13 +96,7 @@ int main(int argc, char* argv[]) {
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
 
-    const char* server_addr = argv[1];
-    const char* server_port = argv[2];
-    const char* my_udp_port = argv[3];
-
     int get_addr_res = getaddrinfo(server_addr, server_port, &hints, &res);
-    
-    // printf("\n//////////////////Phase 1, creating the socket and connecting//////////////////\n");
 
     int handshake_socket =
         socket(res->ai_family,
