@@ -46,7 +46,9 @@ void* response(void* server_message) {
         message->global_info->status = false;
         return NULL;
     } 
+
     printf("\n%s", actual_message);
+
     if (strstr(message->message, "[input]") != NULL) {
         fgets(send_buffer, 99, stdin);
         send(message->socket, send_buffer, SMALL_BUF, 0);
@@ -98,7 +100,9 @@ int main(int argc, char* argv[]) {
     char* recv_buffer = malloc(sizeof(char)*SMALL_BUF);
     char* handshake = malloc(sizeof(char)*SMALL_BUF);
     char* send_buffer = malloc(sizeof(char)*SMALL_BUF);
-    strcpy(handshake, "[client][SYN]|Hello\n");
+    strcpy(handshake, "[client][SYN]|");
+    strcat(handshake, my_udp_port);
+    strcat(handshake, "\n");
 
     
     int init_handshack = 
