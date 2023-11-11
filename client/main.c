@@ -97,7 +97,9 @@ int main(int argc, char* argv[]) {
     char* recv_buffer = malloc(sizeof(char)*SMALL_BUF);
     char* handshake = malloc(sizeof(char)*SMALL_BUF);
     char* send_buffer = malloc(sizeof(char)*SMALL_BUF);
-    strcpy(handshake, "[client][SYN]|Hello\n");
+    strcpy(handshake, "[client][SYN]|");
+    strcat(handshake, my_udp_port);
+    strcat(handshake, "\n");
 
     
     int init_handshack = 
