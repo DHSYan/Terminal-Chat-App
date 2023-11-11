@@ -131,7 +131,7 @@ void *response(void *server_message) {
 
     sending(addr, port, filename, caller_username,
             message->global_info->udp_socket);
-  }
+  } 
 
   return NULL;
 }

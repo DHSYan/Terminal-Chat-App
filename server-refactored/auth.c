@@ -14,6 +14,8 @@ user* create_node(user* next) {
     res->last_log_on = malloc(sizeof(char) *SMALL_BUF);
     res->addr =  malloc(sizeof(char) * SMALL_BUF);
     // res->grouplst = malloc(sizeof(struct group));
+    res->port = 0;
+    res->udp_port = 0;
     res->grouplst = NULL;
     res->next = next;
     res->isActive = false;

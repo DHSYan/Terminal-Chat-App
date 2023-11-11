@@ -35,6 +35,8 @@ int system_caller(char *msg, thread_info *thread_info) {
   } else if (strstr(msg, "/p2pvideo") != NULL) {
     res = p2p(msg, thread_info);
   } else {
+      send(thread_info->socket, "[info]|Invalid Command\n", SMALL_BUF, 0);
+    res = 0;
     printf("This is not a recognized command: %s", msg);
   }
 
