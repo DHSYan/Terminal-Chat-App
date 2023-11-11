@@ -22,7 +22,6 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#include "interaction.h"
 
 #define SMALL_BUF 2048
 
@@ -57,6 +56,8 @@ void* response(void* server_message) {
 
     return NULL;
 }
+
+
 
 
 int main(int argc, char* argv[]) {
