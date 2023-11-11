@@ -99,6 +99,7 @@ int password_phase(user* attempt_user, int socket, thread_info* thread_info) {
             remove_trail_whitespace(buffer);
 
             if (strcmp(buffer, attempt_user->password) == 0) { // correct
+                printf("%s is online\n", attempt_user->username);
                 send(socket,
                         "[info]|Welcome to 3331 Chat App\n",
                         SMALL_BUF,

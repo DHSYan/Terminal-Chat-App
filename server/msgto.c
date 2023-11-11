@@ -144,6 +144,19 @@ void send_message(struct message* message, thread_info* thread_info,
 
     } else {
         send(receiver->socket, message->msg, SMALL_BUF, 0);
+
+        time_t timer = time(NULL);
+        char* time = malloc(sizeof(char)*SMALL_BUF);
+        strcpy(time, asctime(localtime(&timer)));
+        int len_time = strlen(time);
+        time[len_time-1] = '\0'; // to remove the whitespace at the end
+                                 //
+        printf("%s message to %s '%s' at %s\n", 
+                thread_info->thread_user->username,
+                receiver->username,
+                message->raw_msg,
+                time);
+
         if (logging == true) {
             log_msgto(thread_info, message->raw_msg);
         }
@@ -157,5 +170,6 @@ int msgto(thread_info* thread_info, char* buffer) {
     
     struct message* message = create_message(buffer, thread_info);
     send_message(message, thread_info, true);
+
     return 0; // for system caller
 }
