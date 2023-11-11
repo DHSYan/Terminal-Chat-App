@@ -34,6 +34,7 @@ int system_caller(char *msg, thread_info* thread_info) {
     } else if (strstr(msg, "/joingroup") != NULL) {
         res = join_group(msg, thread_info->thread_user);
     } else if (strstr(msg, "/logout") != NULL) {
+        printf("%s logout\n", thread_info->thread_user->username);
         res = -1;
     } else if (strstr(msg, "/p2pvideo") != NULL) {
         res = p2p(msg, thread_info);
