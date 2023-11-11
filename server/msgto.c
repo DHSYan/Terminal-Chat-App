@@ -64,6 +64,7 @@ struct message* create_message(char* string, thread_info* thread_info) {
     // message[k] = '\n';
     // message[k+1] = '\0';
     char raw_message[SMALL_BUF];
+    memset(raw_message, 0, SMALL_BUF);
     while (parsed) {
         strcat(message, parsed);
         strcat(message, " ");
