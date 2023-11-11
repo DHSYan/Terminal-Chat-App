@@ -65,17 +65,17 @@ void log_msgto(thread_info* thread_info, char* raw_message) {
 
 
 
-    int j = 0;
-
-    for (int i = 7; !isspace(raw_message[i]); i++)  {
-        j++;
-    }
-    j++;
-    int raw_message_offset = j + 7;
+    // int j = 0;
+    //
+    // for (int i = 7; !isspace(raw_message[i]); i++)  {
+    //     j++;
+    // }
+    // j++;
+    // int raw_message_offset = j + 7;
 
 
     fprintf(logfile, "%d; %s; %s; %s\n\n", seq_num, time, username,
-            raw_message+raw_message_offset);
+            raw_message);
     fclose(logfile);
 }
 
