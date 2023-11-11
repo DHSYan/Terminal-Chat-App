@@ -57,7 +57,64 @@ void* response(void* server_message) {
     return NULL;
 }
 
+void* receivefile(void* socket) {
+    int udp_socket_listen = *((int*) socket);
+    printf("We are also listening from a UDP socket: %d\n", udp_socket_listen);
 
+    while (true) {
+        char buffer[SMALL_BUF];
+        memset(buffer, 0, SMALL_BUF);
+    
+        struct sockaddr_storage presenter;
+        socklen_t presenter_len = sizeof(presenter);
+    
+        // Waiting For "username|file"
+        recvfrom(udp_socket_listen, buffer, SMALL_BUF,
+                 0, (struct sockaddr*) &presenter, &presenter_len);
+        printf("We got from udp: %s\n", buffer);
+        printf("\n\nhi\n\n");
+    
+        char username[SMALL_BUF];
+        char filename[SMALL_BUF];
+    
+        char* parsed = strtok(buffer, "|");
+        printf("Username: %s\n", parsed);
+        strcpy(username, parsed);
+    
+        parsed = strtok(NULL, "|");
+        printf("filename: %s\n", parsed);
+        strcpy(filename, parsed);
+    
+        char recvfilename[SMALL_BUF];
+        strcat(recvfilename, username);
+        strcat(recvfilename, "_");
+        strcat(recvfilename, filename);
+    
+    
+        FILE* file = fopen(recvfilename, "wb");
+        memset(buffer, 0, SMALL_BUF);
+        while(strcmp(buffer, "[DONE]") != 0) {
+            sendto(udp_socket_listen,
+                   "[OK]\n",
+                   SMALL_BUF, 
+                   0,
+                   ((struct sockaddr*)&presenter), 
+                   ((struct sockaddr_in*)&presenter)->sin_len);
+    
+            recvfrom(udp_socket_listen,
+                     buffer,
+                     SMALL_BUF,
+                     0,
+                     (struct sockaddr*) &presenter,
+                     &presenter_len);
+    
+            fwrite(buffer, 1, SMALL_BUF, file);
+        }
+        fclose(file);
+        printf("File Transfer Complete\n");
+    }
+    return NULL;
+}
 
 
 int main(int argc, char* argv[]) {
@@ -88,6 +145,8 @@ int main(int argc, char* argv[]) {
     int udp_bind_res = 
         bind(udp_socket_listen, udp_res->ai_addr, udp_res->ai_addrlen);
 
+    pthread_t udp_receive;
+    pthread_create(&udp_receive, NULL, receivefile, (void*) &udp_socket_listen);
     
     // printf("\n//////////////////Phase 1, creating the socket and connecting//////////////////\n");
     struct addrinfo hints;
