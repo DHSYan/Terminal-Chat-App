@@ -7,3 +7,4 @@ server/server
 client/client
 server-refactored/server-refactor
 *.txt
+*.mp4
