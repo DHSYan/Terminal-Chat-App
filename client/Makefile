@@ -7,8 +7,10 @@ CC = gcc
 
 FILES = main.c 
 
+FLAGS = -pthread
+
 ${EXEC}: ${FILES}
-	${CC} ${FILES} -o ${EXEC}
+	${CC} ${FILES} ${FLAGS} -o ${EXEC}
 
 .PHONY: clean
 

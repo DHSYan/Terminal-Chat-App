@@ -1,158 +1,241 @@
-#include "auth.h"
-#include "messaging.h"
-#include "util.h"
-#include "stdlib.h"
+#include "client-handler.h"
+#include "lib.h"
+#include "const.h"
 #include "group.h"
+#include "auth.h"
+#include "logging.h"
+#include "msgto.h"
+#include "string-util.h"
+#include <ctype.h>
+#include <stdio.h>
 #include <string.h>
 
-// https://en.cppreference.com/w/c/string/byte/strtok
-// struct group* create_group(struct group* prev, char *arguments, struct user* valid_users) {
-//     char* parsed;
-//     parsed = strtok(arguments, " ");
-//
-//     struct group* group = malloc(sizeof(struct group));
-//     group->head_of_group = NULL;
-//     group->next_group = prev;
-//
-//     int i = 0;
-//     while(parsed) {
-//         if (i == 0) {
-//             strcpy(group->name, parsed);
-//             i++;
-//         } else {
-//             add_to_group(group, return_user(parsed, valid_users));
-//         }
-//         parsed = strtok(NULL, " ");
-//     }
-//     return group;
-// }
+group* create_group_node(char* groupname, group* next, int seq_num) {
+    group* res = malloc(sizeof(struct group));
+    res->name = malloc(sizeof(char) * SMALL_BUF);
+    remove_trail_whitespace(groupname);
+    strcpy(res->name, groupname);
+    res->seq_num = seq_num;
+    res->next = next;
+    res->joined = false;
+    return res;
+}
 
-bool isgroupexist(struct user* valid_user, char* groupname) {
-    for (struct user* cur = valid_user; cur; cur=cur->next) {
-        // if (strcmp(groupname, cur->group) == 0) {
-        //     return true;
-        // }
-        for (int i = 0; i < cur->num_group; i++) {
-            if (strcmp(groupname, cur->group[i]) == 0) {
-                return true;
+void update_seq_num(char* groupname, thread_info* thread_info) {
+    user* valid_users = thread_info->global_info->valid_users;
+
+    for (user* cur = valid_users; cur; cur=cur->next) {
+        group* group_target = return_group(cur, groupname);
+        if (group_target != NULL) {
+            group_target->seq_num++;
+        }
+    }
+}
+
+group* return_group(user* valid_users, char* groupname) {
+    for (struct user* cur = valid_users; cur; cur=cur->next) {
+        for (group* cur_group = cur->grouplst;
+             cur_group;
+             cur_group=cur_group->next) {
+            if (strcmp(cur_group->name, groupname) == 0) {
+                return cur_group;
             }
         }
     }
-    return false;
+    return NULL;
 }
 
-// Return value:
-// 0: succuess
-// -1: group already exist
-int create_group(struct user* valid_user, char* arguments) {
-    printf("Before parse: %s\n", arguments);
+void add_to_group(char* groupname, user* user_target, thread_info* thread_info) {
+    user* valid_users = thread_info->global_info->valid_users;
+    int seq_num = 1;
+    group* group_target = NULL;
+    for (user* cur = valid_users; cur; cur=cur->next) {
+        group* group_target = return_group(valid_users, groupname);
+    }
+
+    if (group_target != NULL) { // exxisiting Group
+        seq_num = group_target->seq_num;
+    } 
+        
+    user_target->grouplst = create_group_node(groupname, user_target->grouplst, seq_num); 
+}
+
+int join_group(char* arg, user* thread_user) {
+    
+    char* parsed;
+    parsed = strtok(arg, " ");
+    parsed = strtok(NULL, " ");
+
+    char groupname[SMALL_BUF];
+    strcpy(groupname, parsed);
+
+    char* message = malloc(sizeof(char)*SMALL_BUF);
+    group* group_target = return_group(thread_user, groupname);
+    if (group_target == NULL) {
+        sprintf(message, "[info]|Group %s doesn't exist\n", groupname);
+    } else {
+        sprintf(message, "[info]|Joined the group: %s sucessfully\n", groupname);
+        group_target->joined = true;
+    }
+    send(thread_user->socket, message, SMALL_BUF, 0);
+
+    return 0;
+}
+
+int create_group(char* arguments, thread_info* thread_info) {
+    user* valid_users = thread_info->global_info->valid_users;
+    user* thread_user = thread_info->thread_user;
+
+    char* err = malloc(sizeof(char)*SMALL_BUF);
+
     char* parsed;
     parsed = strtok(arguments, " ");
     parsed = strtok(NULL, " "); //get rid of "/creategroup"
-    printf("After 1 parse: %s\n", parsed); // This should show groupname + user
 
-    // int i = 0;
-    char groupname[50];
-    strcpy(groupname, parsed);
-    printf("groupname is: %s\n", groupname);
-    parsed = strtok(NULL, " ");
-    printf("After 2 parse: %s\n", parsed); // This should show users
-        
-    //DEGUG
-    // if (isgroupexist(valid_user, groupname)) {
-    //     printf("The group aready exists\n");
-    // } else {
-    //     printf("Looks good the group is unique\n");
-    // }
-    //
-    // while (parsed) {
-    //     printf("Adding the user: %s\n", parsed);
-    //     int len = strlen(parsed);
-    //     // for (int i = 0; i < len+1; i++) {
-    //     //     if (parsed[i] == '\0') {
-    //     //         printf("\\0");
-    //     //     } else {
-    //     //         printf("%c", parsed[i]);
-    //     //     }
-    //     // }
-    //     // struct user* user = return_user(parsed, valid_user);
-    //     // print_user(user);
-    //     // add_to_group(groupname, t user *user)
-    //     parsed = strtok(NULL, " ");
-    // }
-
-    if (isgroupexist(valid_user, groupname)) {
-        return -1;
-    } else {
-        // parsed=strtok(NULL, " "); // get rid of "/creategroup"
-        // strcpy(groupname, parsed); 
-        // print_char_obo(groupname);
-        // parsed=strtok(NULL, " "); // 
-        // print_char_obo(parsed);
-        // printf("Cur parsed: %s\n", parsed);
-    
-       
-        while (parsed != NULL) {
-            print_char_obo(parsed);
-            printf("Adding the user: %s\n", parsed);
-            struct user* usertoadd = return_user(parsed, valid_user);
-            if (usertoadd == NULL) {
-                printf("return_user() failed\n");
-            } else {
-                print_user(usertoadd);
-                add_to_group(groupname, usertoadd);
-                parsed=strtok(NULL, " ");
-                printf("Cur parsed: %s\n", parsed);
-            }
-        }
+    if (parsed == NULL) { // groupname entered?
+        send(thread_info->socket, 
+            "[info]|usage: /creategroup groupname user1 user2 ...\n",
+            SMALL_BUF, 
+            0);
+        return 0;
     }
 
-    print_all_valided_user(valid_user);
+    char groupname[50];
+    strcpy(groupname, parsed);
+    parsed = strtok(NULL, " ");
+
+    if (parsed == NULL) {
+        send(thread_info->socket, 
+                "[info]|Please enter at least one more active users\n", 
+                SMALL_BUF,
+                0);
+        return 0;
+    }
+
+    if (return_group(valid_users, groupname) != NULL) {
+        sprintf(err, 
+                "[info]|A group chat (Name: %s) already exists\n",
+                groupname);
+        send(thread_info->socket, err, SMALL_BUF, 0);
+        return 0;
+    } else {
+
+        while (parsed != NULL) {
+            user* usertoadd = return_user(parsed, valid_users);
+            if (usertoadd == NULL) {
+                sprintf(err, "[info]|%s is not an existing user\n", parsed);
+                send(thread_info->socket, err, SMALL_BUF, 0);
+            } else {
+                if (usertoadd->isActive) {
+                    add_to_group(groupname, usertoadd, thread_info);
+                } else {
+                    sprintf(err,
+                            "[info]|User: %s is not active, Not added\n",
+                            usertoadd->username);
+                    send(thread_info->socket, 
+                         err,
+                         SMALL_BUF,
+                         0);
+                }
+            }
+            parsed=strtok(NULL, " ");
+        }
+
+        // The Person who issue the command automatically gets joined
+        add_to_group(groupname, thread_user, thread_info);
+        char modified_groupname[SMALL_BUF];
+        strcpy(modified_groupname, "/joingroup ");
+        strcat(modified_groupname, groupname);
+        join_group(modified_groupname, thread_user);
+    }
+
     return 0;
 }
 
 
-void add_to_group(char* groupname, user* user) {
-    // user->next_user_in_group = group->head_of_group;
-    // group->head_of_group = user;
-    // print_char_obo(groupname);
-    // print_char_obo(user->group)
-    strcpy(user->group[user->num_group], groupname);
-    user->num_group++;
+int group_msg(char* arguments, thread_info* thread_info) {
+    user* valid_users = thread_info->global_info->valid_users;
+    user* thread_user = thread_info->thread_user;
 
-    // return group;
-}
+    char error_res[SMALL_BUF];
 
-int groupmessage(char* arguments, struct user* valid_users) {
-    printf("Before parse: %s\n", arguments);
-    char* parsed; 
+    char* parsed;
     parsed = strtok(arguments, " ");
-    parsed = strtok(NULL, " "); // getting rid of the /groupmsg
-    printf("After 1 parse: %s\n", parsed);
+    parsed = strtok(NULL, " "); //get rid of "/creategroup"
+
+    if (parsed == NULL) { // Entered in Groupname?
+        send(thread_info->socket, 
+            "[info]|usage: /groupmsg groupname message ...\n",
+            SMALL_BUF, 
+            0);
+        return 0;
+    }
 
     char groupname[50];
+    strcpy(groupname, parsed); 
+    parsed = strtok(NULL, " "); //getting rid of groupname
 
-    strcpy(groupname, parsed);
-    printf("The groupname is %s\n", groupname);
+    if (parsed == NULL) { // Message Entered?
+        send(thread_info->socket, 
+            "[info]|Can not send an empty message\n",
+            SMALL_BUF, 
+            0);
+        return 0;
+    }
 
-    parsed = strtok(NULL, " "); // getting rid of the groupname
 
-    printf("After 2 parse: %s\n", parsed);
+    group* grouptarget = return_group(valid_users, groupname); 
+    if (grouptarget == NULL) { // group exist?
+        sprintf(error_res, 
+                "[info]|A group chat (Name: %s) does NOT exists\n",
+                groupname);
+        send(thread_info->socket, error_res, SMALL_BUF, 0);
+        return 0;
+
+    }
+
+    group* isthreaduseringroup = return_group(thread_user, groupname);
+    if (isthreaduseringroup->joined == false) { // is thread_user in group?
+        sprintf(error_res, 
+                "[info]|Please join the group before sending messages\n");
+        send(thread_info->socket, error_res, SMALL_BUF, 0);
+        return 0;
+    }
+
+    // Building up the message, after strtok-ing it
+    // protocol format will be taken care of by better_create_message();
+    char final_message[SMALL_BUF]; 
+    memset(final_message, 0, SMALL_BUF);
+    while (parsed) {
+        printf("Strcatting the Message: %s..\n", parsed);
+        strcat(final_message, parsed);
+        strcat(final_message, " ");
+        parsed = strtok(NULL, " ");
+    }
    
     for (user* cur = valid_users; cur; cur=cur->next) {
-        print_user(cur);
-        for (int i = 0; i < cur->num_group; i++) {
-            printf("Looking at cur->group: %s\n", cur->group[i]);
-            if (strcmp(cur->group[i], groupname) == 0) {
-                printf("Found! %s has the groupname!\n", cur->username);
-                send_message(better_create_message(cur->username, parsed),
-                             valid_users);
-                // send(cur->socket, parsed, strlen(parsed), 0);
-                
-            }
+        group* cur_group = return_group(cur, groupname);
+        if (cur_group != NULL) { // If (ingroup) 
+            if (cur == thread_user) { // is thread_user
+                sprintf(error_res, 
+                        "[info]|Group chat message sent\n");
+                send(thread_user->socket, error_res, SMALL_BUF, 0);
+            } else if (cur_group->joined == true) {
+                send_message(
+                        better_create_message(cur->username,
+                                              groupname,
+                                              final_message,
+                                              thread_info),
+                        thread_info,
+                        false);
+                log_groupchat(thread_info, groupname, 
+                        thread_info->thread_user->username,
+                        cur_group->seq_num, final_message);
+                update_seq_num(groupname, thread_info);
+
+            } 
         }
     }
-    return 0; // nth special
-    //log the messege
-   
+
+    return 0;
 }

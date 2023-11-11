@@ -1,7 +1,9 @@
 #include "logging.h"
-#include "stdlib.h"
-#include "util.h"
-#include <time.h>
+#include "auth.h"
+#include "lib.h"
+#include "const.h"
+#include <ctype.h>
+#include <string.h>
 
 // Functionality needed
 // 1. Write to a file
@@ -34,10 +36,70 @@ void log_login(struct thread_info* thread_info, char* username) {
     time[len_time-1] = '\0'; // to remove the whitespace at the end
                              //
     
-    int seq_num = thread_info->global_info->seq_num;
-    char* addr = thread_info->addr;
-    int port = thread_info->port;
+    int seq_num = thread_info->global_info->active_user_seq_num;
 
-    fprintf(userlog, "%d; %s; %s; %s; %d\n", seq_num, time, username, addr, port);
+    thread_info->global_info->active_user_seq_num++;
+
+    char* addr = thread_info->addr;
+    int udp_port = thread_info->udp_port;
+
+    fprintf(userlog, "%d; %s; %s; %s; %d\n", seq_num, time, username, addr, udp_port);
     fclose(userlog);
 }
+
+void log_msgto(thread_info* thread_info, char* raw_message) {
+    char username[SMALL_BUF];
+    memset(username, 0, SMALL_BUF);
+    strcpy(username, thread_info->thread_user->username);
+
+    FILE* logfile = init_logging("messagelog.txt");
+
+    time_t timer = time(NULL);
+    char* time = malloc(sizeof(char)*SMALL_BUF);
+    strcpy(time, asctime(localtime(&timer)));
+    int len_time = strlen(time);
+    time[len_time-1] = '\0'; // to remove the whitespace at the end
+   
+    int seq_num = thread_info->global_info->message_seq_sum;
+    thread_info->global_info->message_seq_sum++;
+
+
+
+    int j = 0;
+
+    for (int i = 7; !isspace(raw_message[i]); i++)  {
+        j++;
+    }
+    j++;
+    int raw_message_offset = j + 7;
+
+
+    fprintf(logfile, "%d; %s; %s; %s\n\n", seq_num, time, username,
+            raw_message+raw_message_offset);
+    fclose(logfile);
+}
+
+void log_groupchat(thread_info* thread_info, char* groupname,
+        char* username,
+        int seq_num,
+        char* raw_message) {
+
+    char filename[SMALL_BUF];
+    memset(filename, 0, SMALL_BUF);
+    strcat(filename, groupname);
+    strcat(filename, "_messagelog.txt");
+    FILE* logfile = init_logging(filename);
+
+    time_t timer = time(NULL);
+    char* time = malloc(sizeof(char)*SMALL_BUF);
+    strcpy(time, asctime(localtime(&timer)));
+    int len_time = strlen(time);
+    time[len_time-1] = '\0'; // to remove the whitespace at the end
+   
+    fprintf(logfile, "%d; %s; %s; %s\n\n", seq_num, time,
+            username,
+            raw_message);
+    fclose(logfile);
+
+}
+

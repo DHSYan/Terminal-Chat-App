@@ -1,35 +1,48 @@
 # Make file
-#
-#
+
+
 EXEC = server
 
 CC = gcc
 
-FILES = main.c auth.o util.o interaction.o client_handler.o logging.o messaging.o group.o
+LIB = lib.h const.h
 
-${EXEC}: ${FILES}
-	${CC} ${FILES} -o ${EXEC}
+FILES = main.c client-handler.o protocol-processor.o string-util.o auth.o msgto.o user-util.o group.o logging.o p2p.o
 
-auth.o: auth.c auth.h
+FLAGS = -pthread
+
+${EXEC}: ${FILES} ${LIB}
+	${CC} ${FILES} ${FLAGS} -o ${EXEC}
+
+auth.o: auth.c auth.h ${LIB}
 	${CC} -c auth.c
+#
+# comm.o: comm.c comm.h ${LIB}
+# 	${CC} -c comm.c
 
-util.o: util.c util.h
-	${CC} -c util.c
+client-handler.o: client-handler.c client-handler.h ${LIB}
+	${CC} -c client-handler.c
 
-interaction.o: interaction.c interaction.h
-	${CC} -c interaction.c
+protocol-processor.o: protocol-processor.c protocol-processor.h ${LIB}
+	${CC} -c protocol-processor.c
 
-client_handler.o: client_handler.c client_handler.h
-	${CC} -c client_handler.c
+string-util.o: string-util.c string-util.h ${LIB}
+	${CC} -c string-util.c
 
-logging.o: logging.c logging.h
+msgto.o: msgto.c msgto.h ${LIB}
+	${CC} -c msgto.c
+
+user-util.o: user-util.c user-util.h ${LIB}
+	${CC} -c user-util.c
+
+group.o: group.c group.h ${LIB}
+	${CC} -c group.c
+
+logging.o: logging.c logging.h ${LIB}
 	${CC} -c logging.c
 
-messaging.o: messaging.c messaging.h
-	${CC} -c messaging.c
-
-group.o: group.c group.h
-	${CC} -c group.c
+p2p.o: p2p.c p2p.h ${LIB}
+	${CC} -c p2p.c
 
 .PHONY: clean
 
