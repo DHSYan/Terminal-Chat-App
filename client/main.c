@@ -114,23 +114,23 @@ void* response(void* server_message) {
 
         char addr[SMALL_BUF];
         strcpy(addr, parsed);
-        printf("addr: %s\n", addr);
+        // printf("addr: %s\n", addr);
         parsed = strtok(NULL, " ");
     
 
         char port[SMALL_BUF];
         strcpy(port, parsed);
-        printf("port: %s\n", port);
+        // printf("port: %s\n", port);
         parsed = strtok(NULL, " ");
 
         char filename[SMALL_BUF];
         strcpy(filename, parsed);
-        printf("filename: %s\n", filename);
+        // printf("filename: %s\n", filename);
         parsed = strtok(NULL, " ");
 
         char caller_username[SMALL_BUF];
         strcpy(caller_username, parsed);
-        printf("caller_username: %s\n", caller_username);
+        // printf("caller_username: %s\n", caller_username);
 
         p2psendfile(addr, port, filename, caller_username);
     }
@@ -141,7 +141,7 @@ void* response(void* server_message) {
 
 void* receivefile(void* socket) {
     int udp_socket_listen = *((int*) socket);
-    printf("We are also listening from a UDP socket: %d\n", udp_socket_listen);
+    // printf("We are also listening from a UDP socket: %d\n", udp_socket_listen);
     FILE* file = NULL;
 
     while (true) {
@@ -154,19 +154,19 @@ void* receivefile(void* socket) {
         // Waiting For "username|file"
         recvfrom(udp_socket_listen, buffer, SMALL_BUF,
                  0, (struct sockaddr*) &presenter, &presenter_len);
-        printf("We got from udp: %s\n", buffer);
-        printf("\n\nhi\n\n");
+        // printf("We got from udp: %s\n", buffer);
+        // printf("\n\nhi\n\n");
     
         char username[SMALL_BUF];
         char filename[SMALL_BUF];
     
         char* parsed = strtok(buffer, "|");
-        printf("Username: %s\n", parsed);
+        // printf("Username: %s\n", parsed);
         strcpy(username, parsed);
         remove_trail_whitespace(username);
     
         parsed = strtok(NULL, "|");
-        printf("filename: %s\n", parsed);
+        // printf("filename: %s\n", parsed);
         strcpy(filename, parsed);
     
         char recvfilename[SMALL_BUF];
