@@ -87,7 +87,6 @@ int create_group(char* arguments, thread_info* thread_info) {
     user* valid_users = thread_info->global_info->valid_users;
     user* thread_user = thread_info->thread_user;
 
-    printf("%s issued the /creategroup command\n", thread_user->username);
 
     char* err = malloc(sizeof(char)*SMALL_BUF);
 

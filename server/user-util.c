@@ -39,7 +39,6 @@ int print_active_user(user* valid_users, user* thread_user) {
     } else {
         send(thread_user->socket, send_buffer, SMALL_BUF, 0);
     }
-    printf("%s issued /activeuser command\n", thread_user->username);
     printf("\nReturn Messages:\n%s \n", raw);
     return 0; // for system caller
 

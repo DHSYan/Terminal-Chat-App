@@ -18,18 +18,21 @@ int system_caller(char *msg, thread_info* thread_info) {
 
     int res = -1;
     if(strcmp(msg, "/login") == 0) {
-        // printf("login detected\n");
         res = login(thread_info);
     } else if (strstr(msg, "/msgto") != NULL) {
-        // printf("/msgto detected\n");
         res = msgto(thread_info, msg);
     } else if (strstr(msg, "/activeuser") != NULL) {
+        printf("%s issued /activeuser command\n",
+                thread_info->thread_user->username);
         res = print_active_user(
                 thread_info->global_info->valid_users,
                 thread_info->thread_user);
     } else if (strstr(msg, "/creategroup") != NULL) {
+        printf("%s issued the /creategroup command\n",
+                thread_info->thread_user->username);
         res = create_group(msg, thread_info);
     } else if (strstr(msg, "/groupmsg") != NULL) {
+        printf("%s issued /groupmsg\n", thread_info->thread_user->username);
         res = group_msg(msg, thread_info);
     } else if (strstr(msg, "/joingroup") != NULL) {
         printf("%s issued /joingroup\n", thread_info->thread_user->username);
@@ -38,6 +41,7 @@ int system_caller(char *msg, thread_info* thread_info) {
         printf("%s logout\n", thread_info->thread_user->username);
         res = -1;
     } else if (strstr(msg, "/p2pvideo") != NULL) {
+        printf("%s issued /p2pvideo\n", thread_info->thread_user->username);
         res = p2p(msg, thread_info);
 
     } else {
