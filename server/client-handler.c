@@ -59,6 +59,7 @@ void* client_handler(void* client_info) {
         client_connected = system_caller(buffer, thread_info);
     
         if (client_connected == -1) {
+            sleep(1);
             send(connect_socket,
                     "[FIN]|Bye, Thank you using 3331ChatApp\n",
                     SMALL_BUF,
