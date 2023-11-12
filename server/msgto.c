@@ -137,6 +137,9 @@ void send_message(struct message* message, thread_info* thread_info,
 int msgto(thread_info* thread_info, char* buffer) {
     
     struct message* message = create_message(buffer, thread_info);
+    if (message == NULL) {
+        return 0;
+    }
     send_message(message, thread_info, true);
 
     time_t timer = time(NULL);
