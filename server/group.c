@@ -120,7 +120,7 @@ int create_group(char* arguments, thread_info* thread_info) {
         sprintf(err, 
                 "[info]|A group chat (Name: %s) already exists\n",
                 groupname);
-        return_msg(err);
+        return_msg(err+7);
         send(thread_info->socket, err, SMALL_BUF, 0);
         return 0;
     } else {
@@ -129,7 +129,7 @@ int create_group(char* arguments, thread_info* thread_info) {
             user* usertoadd = return_user(parsed, valid_users);
             if (usertoadd == NULL) {
                 sprintf(err, "[info]|%s is not an existing user\n", parsed);
-                return_msg(err);
+                return_msg(err+7);
                 send(thread_info->socket, err, SMALL_BUF, 0);
             } else {
                 if (usertoadd->isActive) {
@@ -138,7 +138,7 @@ int create_group(char* arguments, thread_info* thread_info) {
                     sprintf(err,
                             "[info]|User: %s is not active, Not added\n",
                             usertoadd->username);
-                    return_msg(err);
+                    return_msg(err+7);
                     send(thread_info->socket, 
                          err,
                          SMALL_BUF,
