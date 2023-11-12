@@ -180,8 +180,8 @@ void* receivefile(void* socket) {
                    SMALL_BUF, 
                    0,
                    ((struct sockaddr*)&presenter), 
-                   ((struct sockaddr_in*)&presenter)->sin_len);
-                  // sizeof(struct sockaddr_in));
+                   //((struct sockaddr_in*)&presenter)->sin_len);
+                   sizeof(struct sockaddr_in));
     
             memset(buffer, 0, SMALL_BUF);
             recvfrom(udp_socket_listen,
