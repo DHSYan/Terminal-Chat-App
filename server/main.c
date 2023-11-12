@@ -25,6 +25,7 @@ int main(int argc, char* argv[]) {
     const char* port = argv[1];
 
     // Creating Server Socket
+    // Used from Beej's Guide
     struct addrinfo hints;
     struct addrinfo* res;
 
@@ -95,6 +96,5 @@ int main(int argc, char* argv[]) {
 
     freeaddrinfo(res);
     return 0;
-    //testing
 }
 

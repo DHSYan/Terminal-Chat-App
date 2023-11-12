@@ -41,12 +41,6 @@ int p2p(char* msg, thread_info* thread_info) {
             "[P2P]|%s %d %s %s\n",
             addr, port, filename, caller_username);
     send(socket, response, SMALL_BUF, 0);
-
-    // char confirm[SMALL_BUF];
-    // sprintf(confirm,
-    //         "[info]|Sent file: %s to %s:%d\n", filename, addr, port);
-    // sleep(2);
-    // send(socket, confirm, SMALL_BUF, 0);
     
     return 0;
 }

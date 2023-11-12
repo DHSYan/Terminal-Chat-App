@@ -13,7 +13,6 @@ user* create_node(user* next) {
     res->password = malloc(sizeof(char) * SMALL_BUF);
     res->last_log_on = malloc(sizeof(char) *SMALL_BUF);
     res->addr =  malloc(sizeof(char) * SMALL_BUF);
-    // res->grouplst = malloc(sizeof(struct group));
     res->grouplst = NULL;
     res->next = next;
     res->isActive = false;

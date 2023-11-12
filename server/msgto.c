@@ -46,23 +46,6 @@ struct message* create_message(char* string, thread_info* thread_info) {
     strcat(message, thread_info->thread_user->username);
     strcat(message, ": ");
 
-
-    // int j = 0;
-    //
-    // for (int i = 7; !isspace(string[i]); i++)  {
-    //     username[j] = string[i];       
-    //     j++;
-    // }
-    // username[j] = '\0';
-    //
-    // j++;
-    // int k = strlen(message);
-    // for (int i = j+7; string[i]; i++) {
-    //     message[k] = string[i];
-    //     k++;
-    // }
-    // message[k] = '\n';
-    // message[k+1] = '\0';
     char raw_message[SMALL_BUF];
     memset(raw_message, 0, SMALL_BUF);
     while (parsed) {
@@ -107,8 +90,6 @@ struct message* better_create_message(
     strcat(message, groupname);
     strcat(message, ", ");
 
-
-
     strcat(message, thread_info->thread_user->username);
     strcat(message, ": ");
 
@@ -145,13 +126,11 @@ void send_message(struct message* message, thread_info* thread_info,
     } else {
         send(receiver->socket, message->msg, SMALL_BUF, 0);
 
-
         if (logging == true) {
             log_msgto(thread_info, message->raw_msg);
         }
 
     }
-    // printf("We send: %s, to %s on %d\n", message->msg,receiver->username, receiver->socket);
 }
 
 
