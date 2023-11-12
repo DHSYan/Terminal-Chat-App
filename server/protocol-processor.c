@@ -32,6 +32,7 @@ int system_caller(char *msg, thread_info* thread_info) {
     } else if (strstr(msg, "/groupmsg") != NULL) {
         res = group_msg(msg, thread_info);
     } else if (strstr(msg, "/joingroup") != NULL) {
+        printf("%s issued /joingroup\n", thread_info->thread_user->username);
         res = join_group(msg, thread_info->thread_user);
     } else if (strstr(msg, "/logout") != NULL) {
         printf("%s logout\n", thread_info->thread_user->username);

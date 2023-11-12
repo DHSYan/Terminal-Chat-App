@@ -4,5 +4,6 @@
 
 // Only what is at the last part of str
 void remove_trail_whitespace(char *str);
+void return_msg(char* string);
 
 #endif

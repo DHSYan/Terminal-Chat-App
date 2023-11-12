@@ -78,6 +78,7 @@ int join_group(char* arg, user* thread_user) {
         group_target->joined = true;
     }
     send(thread_user->socket, message, SMALL_BUF, 0);
+    return_msg(message+7);
 
     return 0;
 }
@@ -85,6 +86,8 @@ int join_group(char* arg, user* thread_user) {
 int create_group(char* arguments, thread_info* thread_info) {
     user* valid_users = thread_info->global_info->valid_users;
     user* thread_user = thread_info->thread_user;
+
+    printf("%s issued the /creategroup command\n", thread_user->username);
 
     char* err = malloc(sizeof(char)*SMALL_BUF);
 
@@ -97,6 +100,7 @@ int create_group(char* arguments, thread_info* thread_info) {
             "[info]|usage: /creategroup groupname user1 user2 ...\n",
             SMALL_BUF, 
             0);
+        return_msg("usage: /creategroup groupname user1 user2 ...\n");
         return 0;
     }
 
@@ -109,6 +113,7 @@ int create_group(char* arguments, thread_info* thread_info) {
                 "[info]|Please enter at least one more active users\n", 
                 SMALL_BUF,
                 0);
+        return_msg("Please enter at least one more active users\n");
         return 0;
     }
 
@@ -116,6 +121,7 @@ int create_group(char* arguments, thread_info* thread_info) {
         sprintf(err, 
                 "[info]|A group chat (Name: %s) already exists\n",
                 groupname);
+        return_msg(err);
         send(thread_info->socket, err, SMALL_BUF, 0);
         return 0;
     } else {
@@ -124,6 +130,7 @@ int create_group(char* arguments, thread_info* thread_info) {
             user* usertoadd = return_user(parsed, valid_users);
             if (usertoadd == NULL) {
                 sprintf(err, "[info]|%s is not an existing user\n", parsed);
+                return_msg(err);
                 send(thread_info->socket, err, SMALL_BUF, 0);
             } else {
                 if (usertoadd->isActive) {
@@ -132,6 +139,7 @@ int create_group(char* arguments, thread_info* thread_info) {
                     sprintf(err,
                             "[info]|User: %s is not active, Not added\n",
                             usertoadd->username);
+                    return_msg(err);
                     send(thread_info->socket, 
                          err,
                          SMALL_BUF,
@@ -156,6 +164,7 @@ int create_group(char* arguments, thread_info* thread_info) {
 int group_msg(char* arguments, thread_info* thread_info) {
     user* valid_users = thread_info->global_info->valid_users;
     user* thread_user = thread_info->thread_user;
+
 
     char error_res[SMALL_BUF];
 
@@ -215,7 +224,7 @@ int group_msg(char* arguments, thread_info* thread_info) {
     char final_message[SMALL_BUF]; 
     memset(final_message, 0, SMALL_BUF);
     while (parsed) {
-        printf("Strcatting the Message: %s..\n", parsed);
+        // printf("Strcatting the Message: %s..\n", parsed);
         strcat(final_message, parsed);
         strcat(final_message, " ");
         parsed = strtok(NULL, " ");
