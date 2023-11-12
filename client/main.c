@@ -57,6 +57,11 @@ void p2psendfile(char* addr, char* port, char* filename, char* caller_username) 
     int sendsocket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
     FILE* file = fopen(filename, "rb");
+    if (file == NULL) {
+        printf("|File doesn't exist\n");
+        return;
+    }
+
     int bytesread;
 
     char buffer[SMALL_BUF];
@@ -173,7 +178,7 @@ void* receivefile(void* socket) {
         strcat(recvfilename, username);
         strcat(recvfilename, "_");
         strcat(recvfilename, filename);
-        printf("we are receving the file: %s\n", recvfilename);
+        printf("\n|we are receving the file: %s\n", recvfilename);
     
     
         file = fopen(recvfilename, "wb");
@@ -200,7 +205,7 @@ void* receivefile(void* socket) {
             }
         }
         // fclose(file);
-        printf("File Transfer Complete\n");
+        printf("|File Transfer Complete\n");
         printf("\n|Enter Command (/msgto, /activeuser, /creategroup, "
                 "/joingroup, /groupmsg, /p2pvideo ,/logout):\n");
     }

@@ -20,6 +20,14 @@ int p2p(char* msg, thread_info* thread_info) {
     strcpy(receiver_username, parsed);
     user* receiver = 
         return_user(receiver_username, thread_info->global_info->valid_users);
+    if (receiver == NULL) {
+        send(socket, "[info]|Entered User doesn't exist\n", SMALL_BUF, 0);
+        return 0;
+    } else if (receiver->isActive == false) {
+        send(socket, "[info]|Entered User is not active\n", SMALL_BUF, 0);
+        return 0;
+    }
+
     char* addr = receiver->addr;
     int port  = receiver->udp_port;
     parsed = strtok(NULL, " "); // get rid of usernaem
@@ -33,6 +41,13 @@ int p2p(char* msg, thread_info* thread_info) {
             "[P2P]|%s %d %s %s\n",
             addr, port, filename, caller_username);
     send(socket, response, SMALL_BUF, 0);
+
+    // char confirm[SMALL_BUF];
+    // sprintf(confirm,
+    //         "[info]|Sent file: %s to %s:%d\n", filename, addr, port);
+    // sleep(2);
+    // send(socket, confirm, SMALL_BUF, 0);
+    
     return 0;
 }
 
