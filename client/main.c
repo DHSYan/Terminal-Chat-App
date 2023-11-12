@@ -119,23 +119,19 @@ void* response(void* server_message) {
 
         char addr[SMALL_BUF];
         strcpy(addr, parsed);
-        // printf("addr: %s\n", addr);
         parsed = strtok(NULL, " ");
     
 
         char port[SMALL_BUF];
         strcpy(port, parsed);
-        // printf("port: %s\n", port);
         parsed = strtok(NULL, " ");
 
         char filename[SMALL_BUF];
         strcpy(filename, parsed);
-        // printf("filename: %s\n", filename);
         parsed = strtok(NULL, " ");
 
         char caller_username[SMALL_BUF];
         strcpy(caller_username, parsed);
-        // printf("caller_username: %s\n", caller_username);
 
         p2psendfile(addr, port, filename, caller_username);
     }
@@ -146,7 +142,6 @@ void* response(void* server_message) {
 
 void* receivefile(void* socket) {
     int udp_socket_listen = *((int*) socket);
-    // printf("We are also listening from a UDP socket: %d\n", udp_socket_listen);
     FILE* file = NULL;
 
     while (true) {
@@ -159,19 +154,15 @@ void* receivefile(void* socket) {
         // Waiting For "username|file"
         recvfrom(udp_socket_listen, buffer, SMALL_BUF,
                  0, (struct sockaddr*) &presenter, &presenter_len);
-        // printf("We got from udp: %s\n", buffer);
-        // printf("\n\nhi\n\n");
     
         char username[SMALL_BUF];
         char filename[SMALL_BUF];
     
         char* parsed = strtok(buffer, "|");
-        // printf("Username: %s\n", parsed);
         strcpy(username, parsed);
         remove_trail_whitespace(username);
     
         parsed = strtok(NULL, "|");
-        // printf("filename: %s\n", parsed);
         strcpy(filename, parsed);
     
         char recvfilename[SMALL_BUF];
@@ -190,6 +181,7 @@ void* receivefile(void* socket) {
                    0,
                    ((struct sockaddr*)&presenter), 
                    ((struct sockaddr_in*)&presenter)->sin_len);
+                  // sizeof(struct sockaddr_in));
     
             memset(buffer, 0, SMALL_BUF);
             recvfrom(udp_socket_listen,
@@ -204,12 +196,10 @@ void* receivefile(void* socket) {
                 fwrite(buffer, 1, SMALL_BUF, file);
             }
         }
-        // fclose(file);
         printf("|File Transfer Complete\n");
         printf("\n|Enter Command (/msgto, /activeuser, /creategroup, "
                 "/joingroup, /groupmsg, /p2pvideo ,/logout):\n");
     }
-    // fclose(file);
     return NULL;
 }
 
@@ -233,7 +223,7 @@ int main(int argc, char* argv[]) {
     udp_hints.ai_socktype = SOCK_DGRAM;
     udp_hints.ai_flags = AI_PASSIVE;
 
-    // Beej
+    // Reference: Beej's Guide
     int udp_get_addr_res = getaddrinfo(NULL, my_udp_port, &udp_hints, &udp_res);
     int udp_socket_listen = 
         socket(udp_res->ai_family, 
@@ -265,10 +255,8 @@ int main(int argc, char* argv[]) {
     if (connect_res < 0) { 
         perror("Couldn't Connect to server\n");
     }
-
-    /////////////////////////////////////////////////////////
-    // printf("\n//////////////////Phase 2, sending handshake//////////////////\n");
     
+    // printf("\n//////////////////Phase 2, sending handshake//////////////////\n");
     char* command = malloc(sizeof(char)*SMALL_BUF);
     char* recv_buffer = malloc(sizeof(char)*SMALL_BUF);
     char* handshake = malloc(sizeof(char)*SMALL_BUF);
